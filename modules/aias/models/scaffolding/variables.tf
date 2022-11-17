@@ -14,10 +14,10 @@ variable "aias_vnet_peers" {
 variable "aias_subnets" {
   type = any
 }
-#variable "aias_subnet_route_tables" {
-#  default = {}
-#  type = any
-#}
+variable "aias_route_tables" {
+  default = {}
+  type = any
+}
 variable "aias_network_security_groups" {
   default = {}
   type    = any

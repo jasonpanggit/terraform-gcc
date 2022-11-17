@@ -1,5 +1,5 @@
 output "random_string" {
-  value = var.random_string
+  value = random_string.random_suffix_string.result
 }
 
 output "aias_resource_groups" {

@@ -122,19 +122,17 @@ variable "aias_subnets" {
       nsg_key          = "aias_internet_app_nsg"
       name             = "InterAppSubnet"
       address_prefixes = ["10.0.2.0/24"]
-      /*
-      delegation = [
-        {
-          name = "asev3_service_delegation"
-          service_delegation = [
-            {
-              name    = "Microsoft.Web/hostingEnvironments"                  # (Required) The name of service to delegate to. Possible values include Microsoft.BareMetal/AzureVMware, Microsoft.BareMetal/CrayServers, Microsoft.Batch/batchAccounts, Microsoft.ContainerInstance/containerGroups, Microsoft.Databricks/workspaces, Microsoft.HardwareSecurityModules/dedicatedHSMs, Microsoft.Logic/integrationServiceEnvironments, Microsoft.Netapp/volumes, Microsoft.ServiceFabricMesh/networks, Microsoft.Sql/managedInstances, Microsoft.Sql/servers, Microsoft.Web/hostingEnvironments and Microsoft.Web/serverFarms.
-              actions = ["Microsoft.Network/virtualNetworks/subnets/action"] # (Required) A list of Actions which should be delegated. Possible values include Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action, Microsoft.Network/virtualNetworks/subnets/action and Microsoft.Network/virtualNetworks/subnets/join/action.
-            },
-          ]
-        },
-      ]
-      */
+      # delegation = [
+      #   {
+      #     name = "asev3_service_delegation"
+      #     service_delegation = [
+      #       {
+      #         name    = "Microsoft.Web/hostingEnvironments"                  # (Required) The name of service to delegate to. Possible values include Microsoft.BareMetal/AzureVMware, Microsoft.BareMetal/CrayServers, Microsoft.Batch/batchAccounts, Microsoft.ContainerInstance/containerGroups, Microsoft.Databricks/workspaces, Microsoft.HardwareSecurityModules/dedicatedHSMs, Microsoft.Logic/integrationServiceEnvironments, Microsoft.Netapp/volumes, Microsoft.ServiceFabricMesh/networks, Microsoft.Sql/managedInstances, Microsoft.Sql/servers, Microsoft.Web/hostingEnvironments and Microsoft.Web/serverFarms.
+      #         actions = ["Microsoft.Network/virtualNetworks/subnets/action"] # (Required) A list of Actions which should be delegated. Possible values include Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action, Microsoft.Network/virtualNetworks/subnets/action and Microsoft.Network/virtualNetworks/subnets/join/action.
+      #       },
+      #     ]
+      #   },
+      # ]
     }
     aias_internet_db_subnet = {
       rg_key           = "aias_internet_rg"
@@ -202,6 +200,30 @@ variable "aias_subnets" {
       nsg_key          = "aias_mgmt_bastion_nsg"
       name             = "AzureBastionSubnet"
       address_prefixes = ["10.2.0.0/24"]
+    }
+  }
+  type = any
+}
+
+# Route tables
+variable "aias_route_tables" {
+  default = {
+    aias_internet_azfw_route_table = {
+      rg_key                        = "aias_internet_rg"
+      rt_key                        = "aias_internet_azfw_route_table"
+      subnet_key                    = "aias_internet_azfw_subnet"
+      next_hop_resource_key         = "aias_internet_azfw"
+      name                          = "aias-inter-azfw-route-table"
+      disable_bgp_route_propagation = true
+      routes = [
+        {
+          name                   = "Route-to-Firewall"
+          address_prefix         = "0.0.0.0/0"
+          next_hop_type          = "VirtualAppliance"
+          next_hop_resource_type = "firewall" # next_hop_resource type is either firewall or linux_vm
+        }
+      ]
+      tags = {}
     }
   }
   type = any

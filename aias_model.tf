@@ -1,17 +1,9 @@
-resource "random_string" "random_suffix_string" {
-  length  = var.random_string_length
-  special = false
-  upper   = false
-  lower   = true
-  numeric = false
-}
-
 # This module generates the aias scaffolding of vnets, subnets, etc. based on the variables' values
 module "aias_model" {
   source = "./modules/aias/models/scaffolding"
 
-  location      = var.location
-  random_string = random_string.random_suffix_string.result
+  location             = var.location
+  random_string_length = var.random_string_length
 
   aias_resource_groups  = var.aias_resource_groups
   aias_virtual_networks = var.aias_virtual_networks
@@ -32,8 +24,4 @@ module "aias_model" {
 
   aias_private_dns_zone_apim_a_records = var.aias_private_dns_zone_apim_a_records
   aias_apims                           = var.aias_apims
-
-  depends_on = [
-    random_string.random_suffix_string
-  ]
 }

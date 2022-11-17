@@ -1,6 +1,6 @@
 resource "azurerm_network_security_group" "aias_nsgs" {
   for_each            = var.aias_network_security_groups
-  name                = "${each.value["name"]}${var.random_string}"
+  name                = "${each.value["name"]}${random_string.random_suffix_string.result}"
   location            = var.location
   resource_group_name = azurerm_resource_group.aias_resource_groups[each.value["rg_key"]].name
 

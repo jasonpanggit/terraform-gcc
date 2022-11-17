@@ -65,21 +65,21 @@ variable "aias_virtual_networks" {
 variable "aias_vnet_peers" {
   default = {
     internet_intranet_vnet_peer = {
-      rg_key          = "aias_internet_rg"
-      vnet_key        = "aias_internet_vnet"
-      remote_vnet_key = "aias_intranet_vnet"
-      name            = "aias-inter-intra-peering"
+      rg_key                       = "aias_internet_rg"
+      vnet_key                     = "aias_internet_vnet"
+      remote_vnet_key              = "aias_intranet_vnet"
+      name                         = "aias-inter-intra-peering"
       allow_virtual_network_access = "true"
       allow_forwarded_traffic      = "true"
       allow_gateway_transit        = "false"
-      use_remote_gateways          = "false"   
+      use_remote_gateways          = "false"
     }
 
     internet_mgmt_vnet_peer = {
-      rg_key          = "aias_internet_rg"
-      vnet_key        = "aias_internet_vnet"
-      remote_vnet_key = "aias_mgmt_vnet"
-      name            = "aias-inter-mgmt-peering"
+      rg_key                       = "aias_internet_rg"
+      vnet_key                     = "aias_internet_vnet"
+      remote_vnet_key              = "aias_mgmt_vnet"
+      name                         = "aias-inter-mgmt-peering"
       allow_virtual_network_access = "true"
       allow_forwarded_traffic      = "true"
       allow_gateway_transit        = "false"
@@ -87,10 +87,10 @@ variable "aias_vnet_peers" {
     }
 
     intranet_mgmt_vnet_peer = {
-      rg_key          = "aias_intranet_rg"
-      vnet_key        = "aias_intranet_vnet"
-      remote_vnet_key = "aias_mgmt_vnet"
-      name            = "aias-intra-mgmt-peering"
+      rg_key                       = "aias_intranet_rg"
+      vnet_key                     = "aias_intranet_vnet"
+      remote_vnet_key              = "aias_mgmt_vnet"
+      name                         = "aias-intra-mgmt-peering"
       allow_virtual_network_access = "true"
       allow_forwarded_traffic      = "true"
       allow_gateway_transit        = "false"
@@ -197,8 +197,8 @@ variable "aias_subnets" {
 
     # mgmt
     azure_mgmt_bastion_subnet = {
-      rg_key   = "aias_mgmt_rg"
-      vnet_key = "aias_mgmt_vnet"
+      rg_key           = "aias_mgmt_rg"
+      vnet_key         = "aias_mgmt_vnet"
       nsg_key          = "aias_mgmt_bastion_nsg"
       name             = "AzureBastionSubnet"
       address_prefixes = ["10.2.0.0/24"]
@@ -1179,7 +1179,7 @@ variable "aias_network_security_groups" {
           destination_address_prefix   = "*"
           destination_address_prefixes = [""]
         },
-        
+
         {
           name                         = "AllowGatewayManagerInbound"
           priority                     = 110
@@ -1195,7 +1195,7 @@ variable "aias_network_security_groups" {
           destination_address_prefix   = "*"
           destination_address_prefixes = [""]
         },
-        
+
         {
           name                         = "DenyInternetInbound"
           priority                     = 4096
@@ -1220,9 +1220,9 @@ variable "aias_network_security_groups" {
           access                       = "Allow"
           protocol                     = "Tcp"
           source_port_range            = ""
-          source_port_ranges           = ["3389","22"]
+          source_port_ranges           = ["3389", "22"]
           destination_port_range       = ""
-          destination_port_ranges      = ["3389","22"]
+          destination_port_ranges      = ["3389", "22"]
           source_address_prefix        = "*"
           source_address_prefixes      = [""]
           destination_address_prefix   = "VirtualNetwork"
@@ -1263,7 +1263,7 @@ variable "aias_network_security_groups" {
       ]
     }
   }
-  type    = any
+  type = any
 }
 
 # Network security group associations
@@ -1275,7 +1275,7 @@ variable "aias_network_security_group_associations" {
       subnet_key = "aias_internet_web_subnet"
     }
     aias_internet_app_subnet_nsg_assoc = {
-      nsg_key = "aias_internet_app_nsg"
+      nsg_key    = "aias_internet_app_nsg"
       subnet_key = "aias_internet_app_subnet"
     }
     aias_internet_db_subnet_nsg_assoc = {
@@ -1317,7 +1317,7 @@ variable "aias_network_security_group_associations" {
       subnet_key = "aias_mgmt_bastion_subnet"
     }
   }
-  type    = any
+  type = any
 }
 
 # Bastion

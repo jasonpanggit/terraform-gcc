@@ -18,6 +18,6 @@ output "gcc_firewalls" {
   value = azurerm_firewall.gcc_firewalls
 }
 
-output "gcc_linux_proxy_vms" {
-  value = azurerm_linux_virtual_machine.gcc_linux_proxy_vms
+output "gcc_linux_vms" {
+  value = azurerm_linux_virtual_machine.gcc_linux_vms
 }

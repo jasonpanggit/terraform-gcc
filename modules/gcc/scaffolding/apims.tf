@@ -1,6 +1,6 @@
 resource "azurerm_api_management" "gcc_apims" {
   for_each             = var.gcc_apims
-  name                 = "${each.value["name"]}${random_string.random_suffix_string.result}"
+  name                 = format("%s%s", each.value["name"], random_string.random_suffix_string.result)
   location             = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].location
   resource_group_name  = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].name
   publisher_name       = each.value["publisher_name"]

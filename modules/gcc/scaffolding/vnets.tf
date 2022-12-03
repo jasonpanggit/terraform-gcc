@@ -1,6 +1,6 @@
 resource "azurerm_virtual_network" "gcc_vnets" {
   for_each            = var.gcc_virtual_networks
-  name                = "${each.value["name"]}${random_string.random_suffix_string.result}"
+  name                = format("%s%s", each.value["name"], random_string.random_suffix_string.result)
   location            = var.location
   resource_group_name = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].name
   address_space       = each.value["address_space"]
@@ -52,7 +52,7 @@ resource "azurerm_subnet" "gcc_subnets" {
 
 resource "azurerm_virtual_network_peering" "gcc_vnet_peers" {
   for_each                     = var.gcc_vnet_peers
-  name                         = "${each.value["name"]}${random_string.random_suffix_string.result}"
+  name                         = format("%s%s", each.value["name"], random_string.random_suffix_string.result)
   virtual_network_name         = azurerm_virtual_network.gcc_vnets[each.value["vnet_key"]].name
   resource_group_name          = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].name
   remote_virtual_network_id    = azurerm_virtual_network.gcc_vnets[each.value["remote_vnet_key"]].id

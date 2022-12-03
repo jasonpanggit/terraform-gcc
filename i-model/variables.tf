@@ -75,6 +75,17 @@ variable "gcc_vnet_peers" {
       use_remote_gateways          = "false"
     }
 
+    intranet_internet_vnet_peer = {
+      rg_key                       = "gcc_intranet_rg"
+      vnet_key                     = "gcc_intranet_vnet"
+      remote_vnet_key              = "gcc_internet_vnet"
+      name                         = "gcc-intra-inter-peering"
+      allow_virtual_network_access = "true"
+      allow_forwarded_traffic      = "true"
+      allow_gateway_transit        = "false"
+      use_remote_gateways          = "false"
+    }
+
     internet_mgmt_vnet_peer = {
       rg_key                       = "gcc_internet_rg"
       vnet_key                     = "gcc_internet_vnet"
@@ -86,11 +97,33 @@ variable "gcc_vnet_peers" {
       use_remote_gateways          = "false"
     }
 
+    mgmt_internet_vnet_peer = {
+      rg_key                       = "gcc_mgmt_rg"
+      vnet_key                     = "gcc_mgmt_vnet"
+      remote_vnet_key              = "gcc_internet_vnet"
+      name                         = "gcc-mgmt-inter-peering"
+      allow_virtual_network_access = "true"
+      allow_forwarded_traffic      = "true"
+      allow_gateway_transit        = "false"
+      use_remote_gateways          = "false"
+    }
+
     intranet_mgmt_vnet_peer = {
       rg_key                       = "gcc_intranet_rg"
       vnet_key                     = "gcc_intranet_vnet"
       remote_vnet_key              = "gcc_mgmt_vnet"
       name                         = "gcc-intra-mgmt-peering"
+      allow_virtual_network_access = "true"
+      allow_forwarded_traffic      = "true"
+      allow_gateway_transit        = "false"
+      use_remote_gateways          = "false"
+    }
+
+    mgmt_intranet_vnet_peer = {
+      rg_key                       = "gcc_mgmt_rg"
+      vnet_key                     = "gcc_mgmt_vnet"
+      remote_vnet_key              = "gcc_intranet_vnet"
+      name                         = "gcc-mgmt-intra-peering"
       allow_virtual_network_access = "true"
       allow_forwarded_traffic      = "true"
       allow_gateway_transit        = "false"
@@ -122,17 +155,6 @@ variable "gcc_subnets" {
       nsg_key          = "gcc_internet_app_nsg"
       name             = "InterAppSubnet"
       address_prefixes = ["10.0.2.0/24"]
-      # delegation = [
-      #   {
-      #     name = "asev3_service_delegation"
-      #     service_delegation = [
-      #       {
-      #         name    = "Microsoft.Web/hostingEnvironments"                  # (Required) The name of service to delegate to. Possible values include Microsoft.BareMetal/AzureVMware, Microsoft.BareMetal/CrayServers, Microsoft.Batch/batchAccounts, Microsoft.ContainerInstance/containerGroups, Microsoft.Databricks/workspaces, Microsoft.HardwareSecurityModules/dedicatedHSMs, Microsoft.Logic/integrationServiceEnvironments, Microsoft.Netapp/volumes, Microsoft.ServiceFabricMesh/networks, Microsoft.Sql/managedInstances, Microsoft.Sql/servers, Microsoft.Web/hostingEnvironments and Microsoft.Web/serverFarms.
-      #         actions = ["Microsoft.Network/virtualNetworks/subnets/action"] # (Required) A list of Actions which should be delegated. Possible values include Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action, Microsoft.Network/virtualNetworks/subnets/action and Microsoft.Network/virtualNetworks/subnets/join/action.
-      #       },
-      #     ]
-      #   },
-      # ]
     }
     gcc_internet_db_subnet = {
       rg_key           = "gcc_internet_rg"
@@ -1393,7 +1415,7 @@ variable "gcc_public_ips" {
 }
 
 # Virtual machines
-variable "gcc_linux_proxy_vm_nics" {
+variable "gcc_linux_vm_nics" {
   default = {
     gcc_internet_gut_proxy_vm_nic = {
       rg_key         = "gcc_internet_rg"
@@ -1411,7 +1433,7 @@ variable "gcc_linux_proxy_vm_nics" {
   }
   type = any
 }
-variable "gcc_linux_proxy_vms" {
+variable "gcc_linux_vms" {
   default = {
     gcc_internet_gut_proxy_vm = {
       rg_key                          = "gcc_internet_rg"
@@ -1438,6 +1460,21 @@ variable "gcc_linux_proxy_vms" {
     }
   }
   type = any
+}
+
+variable "gcc_linux_vm_extensions" {
+  default = {
+    gcc_internet_gut_proxy_vm_extension = {
+      linux_vm_key     = "gcc_internet_gut_proxy_vm"
+      name             = "gcc-inter-gut-proxy-vm-ext"
+      extension_script = "../scripts/squid_setup/squid_setup.sh"
+    }
+    gcc_intranet_gut_proxy_vm_extension = {
+      linux_vm_key     = "gcc_intranet_gut_proxy_vm"
+      name             = "gcc-intra-gut-proxy-vm-ext"
+      extension_script = "../scripts/squid_setup/squid_setup.sh"
+    }
+  }
 }
 
 # API management
@@ -1561,4 +1598,36 @@ variable "gcc_private_dns_zone_apim_a_records" {
     }
   }
   type = any
+}
+
+# AKS
+variable "gcc_aks_clusters" {
+  default = {
+    gcc_internet_app_aks_private_cluster = {
+      rg_key                            = "gcc_internet_rg"
+      subnet_key                        = "gcc_internet_app_aks_subnet"
+      name                              = "gcc-inter-app-aks-pte-cls"
+      dns_prefix                        = "aks-private"
+      private_cluster_enabled           = true
+      default_node_pool_name            = "default"
+      default_node_pool_node_count      = "1"
+      default_node_pool_vm_size         = "Standard_D2_v2"
+      network_profile_network_plugin    = "azure"
+      network_profile_outbound_type     = "userDefinedRouting"
+      network_profile_load_balancer_sku = "standard"
+      identity_type                     = "SystemAssigned"
+    }
+  }
+}
+
+variable "gcc_aks_cluster_private_dns_zone_vnet_links" {
+  default = {
+    gcc_internet_app_aks_private_cluster_dns_zone_vnet_link = {
+      rg_key                    = "gcc_mgmt_rg"
+      vnet_key                  = "gcc_mgmt_vnet"
+      aks_cluster_key           = "gcc_internet_app_aks_private_cluster"
+      name                      = "gcc-mgmt-inter-app-aks-pte-cls-dns-zone-vnet-link"
+      aks_cluster_location_name = "eastus"
+    }
+  }
 }

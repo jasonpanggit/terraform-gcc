@@ -1,10 +1,3 @@
-##################################################################################################################
-# By default, it will scaffold h-model. If you want to scaffold other models e.g. i-model, copy variables.tf
-# into a i_model.tfvar, remove the unnecessary items and do terraform apply --var-file i_model.tfvars.
-# With this approach, you can have different tfvar files for different models while the code base remains the same.
-# Any resources that are not part of the scaffolding should be done outside of the module. Update the module 
-# output.tf if you need addtional access to the module's resources.
-##################################################################################################################
 module "gcc_scaffolding" {
   source = "../modules/gcc/scaffolding"
 
@@ -24,11 +17,17 @@ module "gcc_scaffolding" {
   gcc_bastions   = var.gcc_bastions
   gcc_firewalls  = var.gcc_firewalls
 
-  gcc_linux_proxy_vm_nics = var.gcc_linux_proxy_vm_nics
-  gcc_linux_proxy_vms     = var.gcc_linux_proxy_vms
+  gcc_linux_vm_nics       = var.gcc_linux_vm_nics
+  gcc_linux_vms           = var.gcc_linux_vms
+  gcc_linux_vm_extensions = var.gcc_linux_vm_extensions
 
   gcc_private_dns_zones = var.gcc_private_dns_zones
 
   gcc_private_dns_zone_apim_a_records = var.gcc_private_dns_zone_apim_a_records
   gcc_apims                           = var.gcc_apims
+
+  # AKS
+  gcc_aks_clusters                            = var.gcc_aks_clusters
+  gcc_aks_cluster_private_dns_zone_vnet_links = var.gcc_aks_cluster_private_dns_zone_vnet_links
+
 }

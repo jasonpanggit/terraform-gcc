@@ -1,6 +1,6 @@
 resource "azurerm_network_security_group" "gcc_nsgs" {
   for_each            = var.gcc_network_security_groups
-  name                = "${each.value["name"]}${random_string.random_suffix_string.result}"
+  name                = format("%s%s", each.value["name"], random_string.random_suffix_string.result)
   location            = var.location
   resource_group_name = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].name
 

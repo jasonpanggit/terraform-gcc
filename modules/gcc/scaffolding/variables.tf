@@ -16,7 +16,7 @@ variable "gcc_subnets" {
 }
 variable "gcc_route_tables" {
   default = {}
-  type = any
+  type    = any
 }
 variable "gcc_network_security_groups" {
   default = {}
@@ -42,13 +42,18 @@ variable "gcc_firewalls" {
   type    = any
 }
 
-variable "gcc_linux_proxy_vm_nics" {
+variable "gcc_linux_vm_nics" {
   default = {}
   type    = any
 }
-variable "gcc_linux_proxy_vms" {
+variable "gcc_linux_vms" {
   default = {}
   type    = any
+}
+
+variable "gcc_linux_vm_extensions" {
+  default = {}
+  type = any
 }
 
 variable "gcc_apims" {
@@ -61,6 +66,17 @@ variable "gcc_private_dns_zones" {
   type    = any
 }
 variable "gcc_private_dns_zone_apim_a_records" {
+  default = {}
+  type    = any
+}
+
+# AKS
+variable "gcc_aks_clusters" {
+  default = {}
+  type    = any
+}
+
+variable "gcc_aks_cluster_private_dns_zone_vnet_links" {
   default = {}
   type    = any
 }

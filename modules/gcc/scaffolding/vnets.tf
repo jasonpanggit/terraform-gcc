@@ -1,8 +1,8 @@
-resource "azurerm_virtual_network" "aias_vnets" {
-  for_each            = var.aias_virtual_networks
+resource "azurerm_virtual_network" "gcc_vnets" {
+  for_each            = var.gcc_virtual_networks
   name                = "${each.value["name"]}${random_string.random_suffix_string.result}"
   location            = var.location
-  resource_group_name = azurerm_resource_group.aias_resource_groups[each.value["rg_key"]].name
+  resource_group_name = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].name
   address_space       = each.value["address_space"]
   dns_servers         = lookup(each.value, "dns_servers", null)
   /*
@@ -17,19 +17,19 @@ resource "azurerm_virtual_network" "aias_vnets" {
   tags = each.value["tags"]
 
   depends_on = [
-    azurerm_resource_group.aias_resource_groups
+    azurerm_resource_group.gcc_resource_groups
   ]
 }
 
-resource "azurerm_subnet" "aias_subnets" {
-  for_each                                       = var.aias_subnets
+resource "azurerm_subnet" "gcc_subnets" {
+  for_each                                       = var.gcc_subnets
   name                                           = each.value["name"]
-  resource_group_name                            = azurerm_resource_group.aias_resource_groups[each.value["rg_key"]].name
+  resource_group_name                            = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].name
   address_prefixes                               = each.value["address_prefixes"]
   service_endpoints                              = lookup(each.value, "service_endpoints", null)
   enforce_private_link_endpoint_network_policies = lookup(each.value, "enforce_private_link_endpoint_network_policies", null) #(Optional) Enable or Disable network policies for the private link endpoint on the subnet. Default valule is false. Conflicts with enforce_private_link_service_network_policies.
   enforce_private_link_service_network_policies  = lookup(each.value, "enforce_private_link_service_network_policies", null)  #(Optional) Enable or Disable network policies for the private link service on the subnet. Default valule is false. Conflicts with enforce_private_link_endpoint_network_policies.
-  virtual_network_name                           = azurerm_virtual_network.aias_vnets[each.value["vnet_key"]].name
+  virtual_network_name                           = azurerm_virtual_network.gcc_vnets[each.value["vnet_key"]].name
 
   dynamic "delegation" {
     for_each = lookup(each.value, "delegation", [])
@@ -45,23 +45,23 @@ resource "azurerm_subnet" "aias_subnets" {
     }
   }
   depends_on = [
-    azurerm_resource_group.aias_resource_groups,
-    azurerm_virtual_network.aias_vnets
+    azurerm_resource_group.gcc_resource_groups,
+    azurerm_virtual_network.gcc_vnets
   ]
 }
 
-resource "azurerm_virtual_network_peering" "aias_vnet_peers" {
-  for_each                     = var.aias_vnet_peers
+resource "azurerm_virtual_network_peering" "gcc_vnet_peers" {
+  for_each                     = var.gcc_vnet_peers
   name                         = "${each.value["name"]}${random_string.random_suffix_string.result}"
-  virtual_network_name         = azurerm_virtual_network.aias_vnets[each.value["vnet_key"]].name
-  resource_group_name          = azurerm_resource_group.aias_resource_groups[each.value["rg_key"]].name
-  remote_virtual_network_id    = azurerm_virtual_network.aias_vnets[each.value["remote_vnet_key"]].id
+  virtual_network_name         = azurerm_virtual_network.gcc_vnets[each.value["vnet_key"]].name
+  resource_group_name          = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].name
+  remote_virtual_network_id    = azurerm_virtual_network.gcc_vnets[each.value["remote_vnet_key"]].id
   allow_virtual_network_access = lookup(each.value, "allow_virtual_network_access", null)
   allow_forwarded_traffic      = lookup(each.value, "allow_forwarded_traffic", null)
   allow_gateway_transit        = lookup(each.value, "allow_gateway_transit", null)
   use_remote_gateways          = lookup(each.value, "use_remote_gateways", null)
 
   depends_on = [
-    azurerm_virtual_network.aias_vnets
+    azurerm_virtual_network.gcc_vnets
   ]
 }

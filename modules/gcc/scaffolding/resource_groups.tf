@@ -1,6 +1,6 @@
 # Create resource group
-resource "azurerm_resource_group" "aias_resource_groups" {
-  for_each = var.aias_resource_groups
+resource "azurerm_resource_group" "gcc_resource_groups" {
+  for_each = var.gcc_resource_groups
   name     = "${each.value["name"]}${random_string.random_suffix_string.result}"
   location = var.location
 

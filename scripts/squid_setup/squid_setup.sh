@@ -1,7 +1,7 @@
 #!/bin/bash
 
-sudo apt-get update -y
-sudo apt-get install squid iptables -y
+sudo apt-get update && apt-get upgrade -y
+sudo apt-get install -y iptables squid
 sudo systemctl enable squid
 # enable ip forwarding
 sudo sysctl -w net.ipv4.ip_forward=1

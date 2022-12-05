@@ -1,27 +1,23 @@
-resource "azurerm_network_interface" "gcc_linux_vm_nics" {
-  for_each            = var.gcc_linux_vm_nics
+# NICs
+resource "azurerm_network_interface" "gcc_vm_nics" {
+  for_each            = var.gcc_vm_nics
   name                = each.value["name"]
-  location            = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].location
-  resource_group_name = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].name
+  location            = var.gcc_resource_groups[each.value["rg_key"]].location
+  resource_group_name = var.gcc_resource_groups[each.value["rg_key"]].name
 
   ip_configuration {
     name                          = each.value["ip_config_name"]
-    subnet_id                     = azurerm_subnet.gcc_subnets[each.value["subnet_key"]].id
+    subnet_id                     = var.gcc_subnets[each.value["subnet_key"]].id
     private_ip_address_allocation = "Dynamic"
   }
-
-  depends_on = [
-    azurerm_resource_group.gcc_resource_groups,
-    azurerm_subnet.gcc_subnets
-  ]
 }
 
-# Create Linux forward proxy 
+# Squid virtual machines
 resource "azurerm_linux_virtual_machine" "gcc_linux_vms" {
   for_each            = var.gcc_linux_vms
-  name                = format("%s%s", each.value["name"], random_string.random_suffix_string.result)
-  location            = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].location
-  resource_group_name = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].name
+  name                = format("%s%s", each.value["name"], var.random_string)
+  location            = var.gcc_resource_groups[each.value["rg_key"]].location
+  resource_group_name = var.gcc_resource_groups[each.value["rg_key"]].name
 
   size                            = each.value["size"]
   disable_password_authentication = each.value["disable_password_authentication"]
@@ -34,7 +30,7 @@ resource "azurerm_linux_virtual_machine" "gcc_linux_vms" {
   }
 
   network_interface_ids = [
-    azurerm_network_interface.gcc_linux_vm_nics[each.value["nic_key"]].id
+    azurerm_network_interface.gcc_vm_nics[each.value["nic_key"]].id
   ]
 
   source_image_reference {
@@ -45,14 +41,15 @@ resource "azurerm_linux_virtual_machine" "gcc_linux_vms" {
   }
 
   depends_on = [
-    azurerm_network_interface.gcc_linux_vm_nics
+    azurerm_network_interface.gcc_vm_nics
   ]
 }
 
+# Extensions
 resource "azurerm_virtual_machine_extension" "gcc_linux_vm_extensions" {
   for_each             = var.gcc_linux_vm_extensions
-  name                 = format("%s%s%s", each.value["name"], "-ext", random_string.random_suffix_string.result)
-  virtual_machine_id   = azurerm_linux_virtual_machine.gcc_linux_vms[each.value["linux_vm_key"]].id
+  name                 = format("%s%s%s", each.value["name"], "-ext", var.random_string)
+  virtual_machine_id   = azurerm_linux_virtual_machine.gcc_linux_vms[each.value["vm_key"]].id
   publisher            = "Microsoft.Azure.Extensions"
   type                 = "CustomScript"
   type_handler_version = "2.1"

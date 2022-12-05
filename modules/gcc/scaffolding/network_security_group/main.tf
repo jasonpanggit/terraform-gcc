@@ -1,8 +1,9 @@
+# NSGs
 resource "azurerm_network_security_group" "gcc_nsgs" {
   for_each            = var.gcc_network_security_groups
-  name                = format("%s%s", each.value["name"], random_string.random_suffix_string.result)
-  location            = var.location
-  resource_group_name = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].name
+  name                = format("%s%s", each.value["name"], var.random_string)
+  location            = var.gcc_resource_groups[each.value["rg_key"]].location
+  resource_group_name = var.gcc_resource_groups[each.value["rg_key"]].name
 
   dynamic "security_rule" {
     for_each = each.value["security_rules"]
@@ -34,19 +35,15 @@ resource "azurerm_network_security_group" "gcc_nsgs" {
     }
   }
   tags = each.value["tags"]
-
-  depends_on = [
-    azurerm_resource_group.gcc_resource_groups
-  ]
 }
 
+# NSG associations
 resource "azurerm_subnet_network_security_group_association" "gcc_nsg_associations" {
   for_each                  = var.gcc_network_security_group_associations
   network_security_group_id = azurerm_network_security_group.gcc_nsgs[each.value["nsg_key"]].id
-  subnet_id                 = azurerm_subnet.gcc_subnets[each.value["subnet_key"]].id
+  subnet_id                 = var.gcc_subnets[each.value["subnet_key"]].id
 
   depends_on = [
-    azurerm_subnet.gcc_subnets,
     azurerm_network_security_group.gcc_nsgs
   ]
 }

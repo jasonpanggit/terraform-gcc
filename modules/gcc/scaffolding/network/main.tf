@@ -1,4 +1,25 @@
-resource "azurerm_virtual_network" "gcc_vnets" {
+# Random
+resource "random_string" "random_suffix_string" {
+  length  = var.random_string_length
+  special = false
+  upper   = false
+  lower   = true
+  numeric = false
+}
+
+# Resource groups
+resource "azurerm_resource_group" "gcc_resource_groups" {
+  for_each = var.gcc_resource_groups
+  name     = format("%s%s", each.value["name"], random_string.random_suffix_string.result)
+  location = var.location
+
+  depends_on = [
+    random_string.random_suffix_string
+  ]
+}
+
+# VNets
+resource "azurerm_virtual_network" "gcc_virtual_networks" {
   for_each            = var.gcc_virtual_networks
   name                = format("%s%s", each.value["name"], random_string.random_suffix_string.result)
   location            = var.location
@@ -21,6 +42,7 @@ resource "azurerm_virtual_network" "gcc_vnets" {
   ]
 }
 
+# Subnets
 resource "azurerm_subnet" "gcc_subnets" {
   for_each                                       = var.gcc_subnets
   name                                           = each.value["name"]
@@ -29,7 +51,7 @@ resource "azurerm_subnet" "gcc_subnets" {
   service_endpoints                              = lookup(each.value, "service_endpoints", null)
   enforce_private_link_endpoint_network_policies = lookup(each.value, "enforce_private_link_endpoint_network_policies", null) #(Optional) Enable or Disable network policies for the private link endpoint on the subnet. Default valule is false. Conflicts with enforce_private_link_service_network_policies.
   enforce_private_link_service_network_policies  = lookup(each.value, "enforce_private_link_service_network_policies", null)  #(Optional) Enable or Disable network policies for the private link service on the subnet. Default valule is false. Conflicts with enforce_private_link_endpoint_network_policies.
-  virtual_network_name                           = azurerm_virtual_network.gcc_vnets[each.value["vnet_key"]].name
+  virtual_network_name                           = azurerm_virtual_network.gcc_virtual_networks[each.value["vnet_key"]].name
 
   dynamic "delegation" {
     for_each = lookup(each.value, "delegation", [])
@@ -46,22 +68,23 @@ resource "azurerm_subnet" "gcc_subnets" {
   }
   depends_on = [
     azurerm_resource_group.gcc_resource_groups,
-    azurerm_virtual_network.gcc_vnets
+    azurerm_virtual_network.gcc_virtual_networks
   ]
 }
 
+# VNet peerings
 resource "azurerm_virtual_network_peering" "gcc_vnet_peers" {
   for_each                     = var.gcc_vnet_peers
   name                         = format("%s%s", each.value["name"], random_string.random_suffix_string.result)
-  virtual_network_name         = azurerm_virtual_network.gcc_vnets[each.value["vnet_key"]].name
+  virtual_network_name         = azurerm_virtual_network.gcc_virtual_networks[each.value["vnet_key"]].name
   resource_group_name          = azurerm_resource_group.gcc_resource_groups[each.value["rg_key"]].name
-  remote_virtual_network_id    = azurerm_virtual_network.gcc_vnets[each.value["remote_vnet_key"]].id
+  remote_virtual_network_id    = azurerm_virtual_network.gcc_virtual_networks[each.value["remote_vnet_key"]].id
   allow_virtual_network_access = lookup(each.value, "allow_virtual_network_access", null)
   allow_forwarded_traffic      = lookup(each.value, "allow_forwarded_traffic", null)
   allow_gateway_transit        = lookup(each.value, "allow_gateway_transit", null)
   use_remote_gateways          = lookup(each.value, "use_remote_gateways", null)
 
   depends_on = [
-    azurerm_virtual_network.gcc_vnets
+    azurerm_virtual_network.gcc_virtual_networks
   ]
 }

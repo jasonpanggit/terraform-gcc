@@ -1,6 +1,13 @@
-variable "random_string_length" {}
-variable "location" {}
+variable "subscription_id" {}
+variable "tenant_id" {}
+variable "client_id" {}
+variable "client_secret" {}
 
+# Network module
+variable "random_string_length" {
+  default = 4
+}
+variable "location" {}
 variable "gcc_resource_groups" {
   type = any
 }
@@ -14,10 +21,8 @@ variable "gcc_vnet_peers" {
 variable "gcc_subnets" {
   type = any
 }
-variable "gcc_route_tables" {
-  default = {}
-  type    = any
-}
+
+# NSG module
 variable "gcc_network_security_groups" {
   default = {}
   type    = any
@@ -27,22 +32,28 @@ variable "gcc_network_security_group_associations" {
   type    = any
 }
 
-variable "gcc_bastions" {
+# Firewall module
+variable "gcc_firewall_public_ips" {
   default = {}
   type    = any
 }
-
-variable "gcc_public_ips" {
-  default = {}
-  type    = any
-}
-
 variable "gcc_firewalls" {
   default = {}
   type    = any
 }
 
-variable "gcc_linux_vm_nics" {
+# Bastion module
+variable "gcc_bastion_public_ips" {
+  default = {}
+  type    = any
+}
+variable "gcc_bastions" {
+  default = {}
+  type    = any
+}
+
+# VM module
+variable "gcc_vm_nics" {
   default = {}
   type    = any
 }
@@ -50,18 +61,29 @@ variable "gcc_linux_vms" {
   default = {}
   type    = any
 }
-
 variable "gcc_linux_vm_extensions" {
-  default = {}
-  type = any
-}
-
-variable "gcc_apims" {
   default = {}
   type    = any
 }
 
+# Route table module
+variable "gcc_route_tables" {
+  default = {}
+  type    = any
+}
+
+# API management module
+variable "gcc_internal_apims" {
+  default = {}
+  type    = any
+}
+
+# Private DNS zone module
 variable "gcc_private_dns_zones" {
+  default = {}
+  type    = any
+}
+variable "gcc_private_dns_zone_vnet_links" {
   default = {}
   type    = any
 }
@@ -70,12 +92,11 @@ variable "gcc_private_dns_zone_apim_a_records" {
   type    = any
 }
 
-# AKS
+# Kubernetes module
 variable "gcc_aks_clusters" {
   default = {}
   type    = any
 }
-
 variable "gcc_aks_cluster_private_dns_zone_vnet_links" {
   default = {}
   type    = any

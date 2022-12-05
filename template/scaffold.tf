@@ -56,8 +56,8 @@ module "gcc_vm" {
   gcc_resource_groups = module.gcc_network.gcc_resource_groups
   gcc_subnets         = module.gcc_network.gcc_subnets
 
-  # Linux vms
-  gcc_vm_nics             = var.gcc_vm_nics
+  # Squid proxy vms
+  gcc_vm_nics       = var.gcc_vm_nics
   gcc_linux_vms           = var.gcc_linux_vms
   gcc_linux_vm_extensions = var.gcc_linux_vm_extensions
 }
@@ -96,8 +96,8 @@ module "gcc_private_dns_zone" {
   source = "../modules/gcc/scaffolding/private_dns_zone"
 
   # from network module
-  random_string        = module.gcc_network.random_string
-  gcc_resource_groups  = module.gcc_network.gcc_resource_groups
+  random_string       = module.gcc_network.random_string
+  gcc_resource_groups = module.gcc_network.gcc_resource_groups
   gcc_virtual_networks = module.gcc_network.gcc_virtual_networks
 
   # from APIM module
@@ -105,7 +105,6 @@ module "gcc_private_dns_zone" {
 
   # Private DNS zones
   gcc_private_dns_zones               = var.gcc_private_dns_zones
-  gcc_private_dns_zone_vnet_links     = var.gcc_private_dns_zone_vnet_links
   gcc_private_dns_zone_apim_a_records = var.gcc_private_dns_zone_apim_a_records
 }
 

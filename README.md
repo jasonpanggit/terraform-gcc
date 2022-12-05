@@ -1,4 +1,4 @@
-# Terraform for GCC AIAS models scaffolding
+# Terraform for GCC scaffolding
 Terraform for GCC scaffolding is an terraform template which quickly provisions a GCC scaffolding.
 
 ## Project Structure

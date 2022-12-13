@@ -118,6 +118,28 @@ vnet_peers = {
     use_remote_gateways          = "false"
   }
 
+  # internet intranet gutit
+  internet_intranet_gutit_vnet_peer = {
+    rg_key                       = "internet_rg"
+    vnet_key                     = "internet_vnet"
+    remote_vnet_key              = "intranet_gutit_vnet"
+    name                         = "inter-intra-gutit-peering"
+    allow_virtual_network_access = "true"
+    allow_forwarded_traffic      = "true"
+    allow_gateway_transit        = "false"
+    use_remote_gateways          = "false"
+  }
+  intranet_internet_gutit_vnet_peer = {
+    rg_key                       = "intranet_rg"
+    vnet_key                     = "intranet_gutit_vnet"
+    remote_vnet_key              = "internet_gutit_vnet"
+    name                         = "intra-inter-gutit-peering"
+    allow_virtual_network_access = "true"
+    allow_forwarded_traffic      = "true"
+    allow_gateway_transit        = "false"
+    use_remote_gateways          = "false"
+  }
+
   # intranet
   intranet_gutit_vnet_peer = {
     rg_key                       = "intranet_rg"
@@ -1014,182 +1036,106 @@ network_security_groups = {
     ]
   }
 
-  # mgmt_bastion_nsg = {
-  #   rg_key = "mgmt_rg"
-  #   name   = "mgmt-bastion-nsg"
-  #   tags   = {}
-  #   security_rules = [
-  #     # inbound
-  #     {
-  #       name                         = "AllowBastionInbound"
-  #       priority                     = 100
-  #       direction                    = "Inbound"
-  #       access                       = "Allow"
-  #       protocol                     = "Tcp"
-  #       source_port_range            = "443"
-  #       source_port_ranges           = [""]
-  #       destination_port_range       = "443"
-  #       destination_port_ranges      = [""]
-  #       source_address_prefix        = "Internet"
-  #       source_address_prefixes      = [""]
-  #       destination_address_prefix   = "*"
-  #       destination_address_prefixes = [""]
-  #     },
+  mgmt_bastion_nsg = {
+    rg_key = "mgmt_rg"
+    name   = "mgmt-bastion-nsg"
+    tags   = {}
+    security_rules = [
+      # inbound
+      {
+        name                         = "AllowGatewayManagerInbound"
+        priority                     = 100
+        direction                    = "Inbound"
+        access                       = "Allow"
+        protocol                     = "*"
+        source_port_range            = "*"
+        source_port_ranges           = [""]
+        destination_port_range       = "443"
+        destination_port_ranges      = [""]
+        source_address_prefix        = "GatewayManager"
+        source_address_prefixes      = [""]
+        destination_address_prefix   = "*"
+        destination_address_prefixes = [""]
+      },
+      {
+        name                         = "AllowHttpsInbound"
+        priority                     = 110
+        direction                    = "Inbound"
+        access                       = "Allow"
+        protocol                     = "*"
+        source_port_range            = "*"
+        source_port_ranges           = [""]
+        destination_port_range       = "443"
+        destination_port_ranges      = [""]
+        source_address_prefix        = "Internet"
+        source_address_prefixes      = [""]
+        destination_address_prefix   = "*"
+        destination_address_prefixes = [""]
+      },
+      {
+        name                         = "DenyInternetInbound"
+        priority                     = 4096
+        direction                    = "Inbound"
+        access                       = "Deny"
+        protocol                     = "*"
+        source_port_range            = "*"
+        source_port_ranges           = [""]
+        destination_port_range       = "*"
+        destination_port_ranges      = [""]
+        source_address_prefix        = "Internet"
+        source_address_prefixes      = [""]
+        destination_address_prefix   = "VirtualNetwork"
+        destination_address_prefixes = [""]
+      },
 
-  #     {
-  #       name                         = "AllowGatewayManagerInbound"
-  #       priority                     = 110
-  #       direction                    = "Inbound"
-  #       access                       = "Allow"
-  #       protocol                     = "Tcp"
-  #       source_port_range            = "443"
-  #       source_port_ranges           = [""]
-  #       destination_port_range       = "443"
-  #       destination_port_ranges      = [""]
-  #       source_address_prefix        = "GatewayManager"
-  #       source_address_prefixes      = [""]
-  #       destination_address_prefix   = "*"
-  #       destination_address_prefixes = [""]
-  #     },
-
-  #     {
-  #       name                         = "AllowAzureLoadBalancerInbound"
-  #       priority                     = 120
-  #       direction                    = "Inbound"
-  #       access                       = "Allow"
-  #       protocol                     = "Tcp"
-  #       source_port_range            = "443"
-  #       source_port_ranges           = [""]
-  #       destination_port_range       = "443"
-  #       destination_port_ranges      = [""]
-  #       source_address_prefix        = "AzureLoadBalancer"
-  #       source_address_prefixes      = [""]
-  #       destination_address_prefix   = "*"
-  #       destination_address_prefixes = [""]
-  #     },
-
-  #     {
-  #       name                         = "AllowBastionHostCommInbound"
-  #       priority                     = 130
-  #       direction                    = "Inbound"
-  #       access                       = "Allow"
-  #       protocol                     = "Tcp"
-  #       source_port_range            = ""
-  #       source_port_ranges           = ["5701", "8080"]
-  #       destination_port_range       = ""
-  #       destination_port_ranges      = ["5701", "8080"]
-  #       source_address_prefix        = "VirtualNetwork"
-  #       source_address_prefixes      = [""]
-  #       destination_address_prefix   = "VirtualNetwork"
-  #       destination_address_prefixes = [""]
-  #     },
-
-  #     #     # {
-  #     #     #   name                         = "DenyInternetInbound"
-  #     #     #   priority                     = 4096
-  #     #     #   direction                    = "Inbound"
-  #     #     #   access                       = "Deny"
-  #     #     #   protocol                     = "*"
-  #     #     #   source_port_range            = "*"
-  #     #     #   source_port_ranges           = [""]
-  #     #     #   destination_port_range       = "*"
-  #     #     #   destination_port_ranges      = [""]
-  #     #     #   source_address_prefix        = "Internet"
-  #     #     #   source_address_prefixes      = [""]
-  #     #     #   destination_address_prefix   = "VirtualNetwork"
-  #     #     #   destination_address_prefixes = [""]
-  #     #     # },
-
-  #     # outbound
-  #     {
-  #       name                         = "AllowRdpSshOutbound"
-  #       priority                     = 100
-  #       direction                    = "Outbound"
-  #       access                       = "Allow"
-  #       protocol                     = "*"
-  #       source_port_range            = ""
-  #       source_port_ranges           = ["22", "3389"]
-  #       destination_port_range       = ""
-  #       destination_port_ranges      = ["22", "3389"]
-  #       source_address_prefix        = "*"
-  #       source_address_prefixes      = [""]
-  #       destination_address_prefix   = "VirtualNetwork"
-  #       destination_address_prefixes = [""]
-  #     },
-
-  #     {
-  #       name                         = "AllowAzureCloudOutbound"
-  #       priority                     = 110
-  #       direction                    = "Outbound"
-  #       access                       = "Allow"
-  #       protocol                     = "Tcp"
-  #       source_port_range            = "443"
-  #       source_port_ranges           = [""]
-  #       destination_port_range       = "443"
-  #       destination_port_ranges      = [""]
-  #       source_address_prefix        = "*"
-  #       source_address_prefixes      = [""]
-  #       destination_address_prefix   = "AzureCloud"
-  #       destination_address_prefixes = [""]
-  #     },
-
-  #     {
-  #       name                         = "AllowBastionHostCommsOutbound"
-  #       priority                     = 120
-  #       direction                    = "Outbound"
-  #       access                       = "Allow"
-  #       protocol                     = "*"
-  #       source_port_range            = ""
-  #       source_port_ranges           = ["5701", "8080"]
-  #       destination_port_range       = ""
-  #       destination_port_ranges      = ["5701", "8080"]
-  #       source_address_prefix        = "VirtualNetwork"
-  #       source_address_prefixes      = [""]
-  #       destination_address_prefix   = "VirtualNetwork"
-  #       destination_address_prefixes = [""]
-  #     },
-
-  #     {
-  #       name                         = "AllowGetSessionOutbound"
-  #       priority                     = 130
-  #       direction                    = "Outbound"
-  #       access                       = "Allow"
-  #       protocol                     = "*"
-  #       source_port_range            = "80"
-  #       source_port_ranges           = [""]
-  #       destination_port_range       = "80"
-  #       destination_port_ranges      = [""]
-  #       source_address_prefix        = "*"
-  #       source_address_prefixes      = [""]
-  #       destination_address_prefix   = "Internet"
-  #       destination_address_prefixes = [""]
-  #     },
-
-  #     #     # {
-  #     #     #   name                         = "DenyInternetOutbound"
-  #     #     #   priority                     = 4096
-  #     #     #   direction                    = "Outbound"
-  #     #     #   access                       = "Deny"
-  #     #     #   protocol                     = "*"
-  #     #     #   source_port_range            = "*"
-  #     #     #   source_port_ranges           = [""]
-  #     #     #   destination_port_range       = "*"
-  #     #     #   destination_port_ranges      = [""]
-  #     #     #   source_address_prefix        = "VirtualNetwork"
-  #     #     #   source_address_prefixes      = [""]
-  #     #     #   destination_address_prefix   = "Internet"
-  #     #     #   destination_address_prefixes = [""]
-  #     #     # }
-  #   ]
-  # }
-
-  # mgmt_terraform_nsg = {
-  #   rg_key = "mgmt_rg"
-  #   name   = "mgmt-terraform-nsg"
-  #   tags   = {}
-  #   security_rules = [
-  #   ]
-  # }
+      # outbound
+      {
+        name                         = "AllowRdpSshOutbound"
+        priority                     = 100
+        direction                    = "Outbound"
+        access                       = "Allow"
+        protocol                     = "*"
+        source_port_range            = "*"
+        source_port_ranges           = [""]
+        destination_port_range       = ""
+        destination_port_ranges      = ["22", "3389"]
+        source_address_prefix        = "*"
+        source_address_prefixes      = [""]
+        destination_address_prefix   = "VirtualNetwork"
+        destination_address_prefixes = [""]
+      },
+      {
+        name                         = "AllowAzureCloudOutbound"
+        priority                     = 110
+        direction                    = "Outbound"
+        access                       = "Allow"
+        protocol                     = "Tcp"
+        source_port_range            = "*"
+        source_port_ranges           = [""]
+        destination_port_range       = "443"
+        destination_port_ranges      = [""]
+        source_address_prefix        = "*"
+        source_address_prefixes      = [""]
+        destination_address_prefix   = "AzureCloud"
+        destination_address_prefixes = [""]
+      },
+      {
+        name                         = "DenyInternetOutbound"
+        priority                     = 4096
+        direction                    = "Outbound"
+        access                       = "Deny"
+        protocol                     = "*"
+        source_port_range            = "*"
+        source_port_ranges           = [""]
+        destination_port_range       = "*"
+        destination_port_ranges      = [""]
+        source_address_prefix        = "VirtualNetwork"
+        source_address_prefixes      = [""]
+        destination_address_prefix   = "Internet"
+        destination_address_prefixes = [""]
+      }
+    ]
+  }
 }
 
 # Network security group associations
@@ -1244,6 +1190,12 @@ network_security_group_associations = {
     nsg_key    = "intranet_it_nsg"
     subnet_key = "intranet_it_subnet"
   }
+
+  # mgmt
+  mgmt_bastion_subnet_nsg_assoc = {
+    nsg_key    = "mgmt_bastion_nsg"
+    subnet_key = "mgmt_bastion_subnet"
+  }
 }
 
 ##########################################
@@ -1271,6 +1223,7 @@ firewalls = {
     sku_name       = "AZFW_VNet"
     sku_tier       = "Standard"
     dns_servers    = ["168.63.129.16"] # enable DNS proxy by setting custom DNS
+    virtual_hubs   = []
   }
 }
 
@@ -1580,12 +1533,12 @@ storage_accounts = {
 }
 storage_account_private_endpoints = {
   internet_gut_sftp_storage_account_private_endpoint = {
-    rg_key              = "internet_rg"
-    subnet_key          = "internet_gut_subnet"
-    name                = "inter-gut-sftp-sa-pe"
+    rg_key     = "internet_rg"
+    subnet_key = "internet_gut_subnet"
+    name       = "inter-gut-sftp-sa-pe"
     private_service_connections = [
       {
-        storage_account_key = "internet_gut_sftp_storage_account"
+        storage_account_key  = "internet_gut_sftp_storage_account"
         name                 = "inter-gut-sftp-sa-psc"
         is_manual_connection = false
         subresource_names    = ["blob"]
@@ -1593,12 +1546,12 @@ storage_account_private_endpoints = {
     ]
   }
   intranet_gut_sftp_storage_account_private_endpoint = {
-    rg_key              = "intranet_rg"
-    subnet_key          = "intranet_gut_subnet"
-    name                = "intra-gut-sftp-sa-pe"
+    rg_key     = "intranet_rg"
+    subnet_key = "intranet_gut_subnet"
+    name       = "intra-gut-sftp-sa-pe"
     private_service_connections = [
       {
-        storage_account_key = "intranet_gut_sftp_storage_account"
+        storage_account_key  = "intranet_gut_sftp_storage_account"
         name                 = "intra-gut-sftp-sa-psc"
         is_manual_connection = false
         subresource_names    = ["blob"]

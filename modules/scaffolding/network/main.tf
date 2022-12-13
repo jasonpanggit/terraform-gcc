@@ -10,7 +10,7 @@ resource "random_string" "random_suffix_string" {
 # Resource groups
 resource "azurerm_resource_group" "resource_groups" {
   for_each = var.resource_groups
-  name     = format("%s%s", each.value["name"], random_string.random_suffix_string.result)
+  name     = format("%s%s", each.value.name, random_string.random_suffix_string.result)
   location = var.location
 
   depends_on = [
@@ -21,10 +21,10 @@ resource "azurerm_resource_group" "resource_groups" {
 # VNets
 resource "azurerm_virtual_network" "virtual_networks" {
   for_each            = var.virtual_networks
-  name                = format("%s%s", each.value["name"], random_string.random_suffix_string.result)
+  name                = format("%s%s", each.value.name, random_string.random_suffix_string.result)
   location            = var.location
-  resource_group_name = azurerm_resource_group.resource_groups[each.value["rg_key"]].name
-  address_space       = each.value["address_space"]
+  resource_group_name = azurerm_resource_group.resource_groups[each.value.rg_key].name
+  address_space       = each.value.address_space
   dns_servers         = lookup(each.value, "dns_servers", null)
   /*
   dynamic "ddos_protection_plan" {
@@ -35,7 +35,7 @@ resource "azurerm_virtual_network" "virtual_networks" {
     }
   }
   */
-  tags = each.value["tags"]
+  tags = each.value.tags
 
   depends_on = [
     azurerm_resource_group.resource_groups
@@ -45,13 +45,13 @@ resource "azurerm_virtual_network" "virtual_networks" {
 # Subnets
 resource "azurerm_subnet" "subnets" {
   for_each                                       = var.subnets
-  name                                           = each.value["name"]
-  resource_group_name                            = azurerm_resource_group.resource_groups[each.value["rg_key"]].name
-  address_prefixes                               = each.value["address_prefixes"]
+  name                                           = each.value.name
+  resource_group_name                            = azurerm_resource_group.resource_groups[each.value.rg_key].name
+  address_prefixes                               = each.value.address_prefixes
   service_endpoints                              = lookup(each.value, "service_endpoints", null)
   private_endpoint_network_policies_enabled = lookup(each.value, "private_endpoint_network_policies_enabled", null) #(Optional) Enable or Disable network policies for the private link endpoint on the subnet. Default valule is false. Conflicts with enforce_private_link_service_network_policies.
   private_link_service_network_policies_enabled  = lookup(each.value, "private_link_service_network_policies_enabled", null)  #(Optional) Enable or Disable network policies for the private link service on the subnet. Default valule is false. Conflicts with enforce_private_link_endpoint_network_policies.
-  virtual_network_name                           = azurerm_virtual_network.virtual_networks[each.value["vnet_key"]].name
+  virtual_network_name                           = azurerm_virtual_network.virtual_networks[each.value.vnet_key].name
 
   dynamic "delegation" {
     for_each = lookup(each.value, "delegation", [])
@@ -75,10 +75,10 @@ resource "azurerm_subnet" "subnets" {
 # VNet peerings
 resource "azurerm_virtual_network_peering" "vnet_peers" {
   for_each                     = var.vnet_peers
-  name                         = format("%s%s", each.value["name"], random_string.random_suffix_string.result)
-  virtual_network_name         = azurerm_virtual_network.virtual_networks[each.value["vnet_key"]].name
-  resource_group_name          = azurerm_resource_group.resource_groups[each.value["rg_key"]].name
-  remote_virtual_network_id    = azurerm_virtual_network.virtual_networks[each.value["remote_vnet_key"]].id
+  name                         = format("%s%s", each.value.name, random_string.random_suffix_string.result)
+  virtual_network_name         = azurerm_virtual_network.virtual_networks[each.value.vnet_key].name
+  resource_group_name          = azurerm_resource_group.resource_groups[each.value.rg_key].name
+  remote_virtual_network_id    = azurerm_virtual_network.virtual_networks[each.value.remote_vnet_key].id
   allow_virtual_network_access = lookup(each.value, "allow_virtual_network_access", null)
   allow_forwarded_traffic      = lookup(each.value, "allow_forwarded_traffic", null)
   allow_gateway_transit        = lookup(each.value, "allow_gateway_transit", null)

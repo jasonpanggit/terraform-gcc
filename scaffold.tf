@@ -37,6 +37,7 @@ module "firewall" {
   # Firewalls
   firewall_public_ips = var.firewall_public_ips
   firewalls           = var.firewalls
+  firewall_app_rules  = var.firewall_app_rules
 
   depends_on = [
     module.network
@@ -197,5 +198,33 @@ module "storage_account" {
   depends_on = [
     module.network,
     module.private_dns_zone
+  ]
+}
+
+module "vwan" {
+  source = "./modules/scaffolding/virtual_wan"
+
+  # from network module
+  random_string    = module.network.random_string
+  resource_groups  = module.network.scaffold_resource_groups
+  virtual_networks = module.network.scaffold_virtual_networks
+  subnets          = module.network.scaffold_subnets
+
+  # from firewall module
+  firewalls = module.firewall.scaffold_firewalls
+
+  # from vm module
+  linux_vms = module.vm.scaffold_linux_vms
+
+  vwans                 = var.vwans
+  vwan_hubs             = var.vwan_hubs
+  vwan_hub_connections  = var.vwan_hub_connections
+  vwan_hub_route_tables = var.vwan_hub_route_tables
+  # vwan_hub_route_table_routes = var.vwan_hub_route_table_routes
+
+  depends_on = [
+    module.network,
+    module.firewall,
+    module.vm
   ]
 }

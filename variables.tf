@@ -142,3 +142,29 @@ variable "storage_account_private_endpoint_private_dns_zone_a_records" {
   default = {}
   type    = any
 }
+
+# Virtual WAN
+variable "vwans" {
+  default = {}
+  type    = any
+}
+# Virtual WAN Hubs
+variable "vwan_hubs" {
+  default = {}
+  type    = any
+}
+# Virtual WAN Connections
+variable "vwan_hub_connections" {
+  default = {}
+  type    = any
+}
+# Virtual WAN Route Tables
+variable "vwan_hub_route_tables" {
+  default = {}
+  type    = any
+}
+# Virtual WAN Route Table Routes
+variable "vwan_hub_route_table_routes" {
+  default = {}
+  type    = any
+}

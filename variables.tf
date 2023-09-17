@@ -198,3 +198,29 @@ variable "private_dns_resolvers_outbound_endpoints" {
   default = {}
   type    = any
 }
+
+# Virtual desktop
+variable "virtual_desktop_workspaces" {
+  default = {}
+  type    = any
+}
+variable "virtual_desktop_host_pools" {
+  default = {}
+  type    = any
+}
+variable "virtual_desktop_host_pool_registration_infos" {
+  default = {}
+  type    = any
+}
+variable "virtual_desktop_application_groups" {
+  default = {}
+  type    = any
+}
+variable "virtual_desktop_application_group_associations" {
+  default = {}
+  type    = any
+}
+variable "virtual_desktop_vms" {
+  default = {}
+  type    = any
+}

@@ -286,7 +286,6 @@ module "vwan" {
   #   module.vm
   # ]
 }
-
 module "private_dns_resolver" {
   source = "./modules/scaffolding/private_dns_resolver"
 
@@ -307,4 +306,23 @@ module "private_dns_resolver" {
   #   module.resource_group,
   #   module.network
   # ]
+}
+
+module "virtual_desktop" {
+  source = "./modules/scaffolding/virtual_desktop"
+
+  # from resource group module
+  random_string   = module.resource_group.random_string
+  resource_groups = module.resource_group.scaffold_resource_groups
+
+  # from network module
+  subnets = module.network.scaffold_subnets
+
+  virtual_desktop_workspaces                     = var.virtual_desktop_workspaces
+  virtual_desktop_host_pools                     = var.virtual_desktop_host_pools
+  virtual_desktop_host_pool_registration_infos   = var.virtual_desktop_host_pool_registration_infos
+  virtual_desktop_application_groups             = var.virtual_desktop_application_groups
+  virtual_desktop_application_group_associations = var.virtual_desktop_application_group_associations
+  virtual_desktop_vms                            = var.virtual_desktop_vms
+
 }

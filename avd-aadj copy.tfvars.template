@@ -1,0 +1,213 @@
+##################################################################################################################
+# This is the TF VARS file for setting up avd aadj demo environment
+#
+# TODO:
+# 1. create AADJ Group and add user to the group (optional)
+# 2. assign AADJ Group to AVD desktop application group
+# 3. grant Virtual Machine User Login role to AADJ Group on resource group scope
+# 4. grant Virtual Machine Administrator Login role to admin user on resource group scope for local admin access
+##################################################################################################################
+
+subscription_id = "enter-subscription-id"
+tenant_id       = "enter-tenant-id"
+client_id       = "enter-client-id"
+client_secret   = "enter-client-secret"
+
+##########################################
+# Resource Group module
+##########################################
+
+random_string_length = 4
+location             = "East US"
+
+# Resource groups
+resource_groups = {
+  # internet
+  internet_rg = {
+    name = "internet_rg"
+  }
+
+  # management
+  mgmt_rg = {
+    name = "mgmt_rg"
+  }
+}
+
+##########################################
+# Network module
+##########################################
+
+# Virtual networks
+virtual_networks = {
+  # internet
+  internet_vnet = {
+    rg_key        = "internet_rg"
+    name          = "internet_vnet"
+    address_space = ["100.65.0.0/16"]
+    tags          = {}
+  }
+
+  # management
+  mgmt_vnet = {
+    rg_key        = "mgmt_rg"
+    name          = "mgmt_vnet"
+    address_space = ["10.3.0.0/16"]
+    tags          = {}
+  }
+}
+
+# Virtual network peerings
+vnet_peers = {
+  # internet and mgmt
+  internet_mgmt_vnet_peer = {
+    rg_key                       = "internet_rg"
+    vnet_key                     = "internet_vnet"
+    remote_vnet_key              = "mgmt_vnet"
+    name                         = "internet_mgmt_peering"
+    allow_virtual_network_access = "true"
+    allow_forwarded_traffic      = "true"
+    allow_gateway_transit        = "false"
+    use_remote_gateways          = "false"
+  }
+  mgmt_internet_vnet_peer = {
+    rg_key                       = "mgmt_rg"
+    vnet_key                     = "mgmt_vnet"
+    remote_vnet_key              = "internet_vnet"
+    name                         = "mgmt_internet_peering"
+    allow_virtual_network_access = "true"
+    allow_forwarded_traffic      = "true"
+    allow_gateway_transit        = "false"
+    use_remote_gateways          = "false"
+  }
+}
+
+# Subnets
+subnets = {
+  # internet
+  internet_avd_subnet = {
+    rg_key           = "internet_rg"
+    vnet_key         = "internet_vnet"
+    name             = "InterAvdSubnet"
+    address_prefixes = ["100.65.4.0/24"]
+  }
+
+  # management
+  mgmt_bastion_subnet = {
+    rg_key           = "mgmt_rg"
+    vnet_key         = "mgmt_vnet"
+    name             = "AzureBastionSubnet"
+    address_prefixes = ["10.3.0.0/24"]
+  }
+}
+
+##########################################
+# NSG module
+##########################################
+
+# Network security groups
+network_security_groups = {}
+
+# Network security group associations
+network_security_group_associations = {}
+
+##########################################
+# Firewall module
+##########################################
+
+# Firewall public ips
+firewall_public_ips = {}
+
+# Firewall
+firewalls = {}
+
+##########################################
+# Bastion module
+##########################################
+
+# Bastion public ips
+bastion_public_ips = {
+  mgmt_bastion_public_ip = {
+    rg_key            = "mgmt_rg"
+    name              = "mgmt_bastion_ip"
+    allocation_method = "Static"
+    sku               = "Standard"
+  }
+}
+
+# Bastion
+bastions = {
+  mgmt_bastion = {
+    rg_key         = "mgmt_rg"
+    subnet_key     = "mgmt_bastion_subnet"
+    public_ip_key  = "mgmt_bastion_public_ip"
+    name           = "mgmt_bastion"
+    ip_config_name = "mgmt_bastiion_ip_config"
+  }
+}
+
+##########################################
+# AVD module
+##########################################
+
+virtual_desktop_workspaces = {
+  virtual_desktop_workspace = {
+    rg_key        = "internet_rg"
+    name          = "avd_workspace"
+    friendly_name = "AVD Workspace"
+    description   = "AVD Workspace"
+  }
+}
+
+virtual_desktop_host_pools = {
+  virtual_desktop_host_pool = {
+    rg_key                   = "internet_rg"
+    host_pool_key            = "virtual_desktop_host_pool"
+    name                     = "avd_host_pool"
+    friendly_name            = "AVD Host Pool"
+    description              = "AVD Host Pool"
+    validate_environment     = true
+    start_vm_on_connect      = true
+    custom_rdp_properties    = "audiocapturemode:i:1;audiomode:i:0;targetisaadjoined:i:1;"
+    type                     = "Pooled"
+    maximum_sessions_allowed = 2
+    load_balancer_type       = "DepthFirst"
+  }
+}
+
+virtual_desktop_host_pool_registration_infos = {
+  virtual_desktop_host_pool_registration_info = {
+    host_pool_key = "virtual_desktop_host_pool"
+  }
+}
+
+virtual_desktop_application_groups = {
+  virtual_desktop_desktop_app_group = {
+    rg_key        = "internet_rg"
+    host_pool_key = "virtual_desktop_host_pool"
+    name          = "avd-desktop-app-group"
+    type          = "Desktop"
+    friendly_name = "Desktop Application Group"
+    description   = "Desktop Application Group"
+  }
+}
+
+virtual_desktop_application_group_associations = {
+  virtual_desktop_desktop_app_group_workspace_association = {
+    application_group_key = "virtual_desktop_desktop_app_group"
+    workspace_key         = "virtual_desktop_workspace"
+  }
+}
+
+virtual_desktop_vms = {
+  host_pool_key         = "virtual_desktop_host_pool"
+  rg_key                = "internet_rg"
+  registration_info_key = "virtual_desktop_host_pool"
+  subnet_key            = "internet_avd_subnet"
+  count                 = 1
+  prefix                = "avd-vm"
+  size                  = "Standard_B2MS"
+  provision_vm_agent    = true
+  admin_username        = "adminuser"
+  admin_password        = "P@55w0rd1234"
+}
+

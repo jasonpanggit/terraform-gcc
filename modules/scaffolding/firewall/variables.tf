@@ -11,6 +11,12 @@ variable "subnets" {
   type    = any
 }
 
+# from vwan module
+variable "vwan_hubs" {
+  default = {}
+  type    = any
+}
+
 # Firewalls
 variable "firewall_public_ips" {
   default = {}
@@ -26,3 +32,9 @@ variable "firewall_app_rules" {
   default = {}
   type    = any
 }
+
+# from private dns resolver module
+# variable "private_dns_resolver_inbound_endpoints" {
+#   default = {}
+#   type    = any
+# }

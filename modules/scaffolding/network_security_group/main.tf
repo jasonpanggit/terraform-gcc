@@ -1,7 +1,7 @@
 # NSGs
 resource "azurerm_network_security_group" "nsgs" {
   for_each            = var.network_security_groups
-  name                = format("%s%s", each.value.name, var.random_string)
+  name                = format("%s_%s", each.value.name, var.random_string)
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
 

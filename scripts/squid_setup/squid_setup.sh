@@ -14,7 +14,7 @@ sudo sysctl -w net.ipv4.ip_forward=1
 sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3128
 
 # config iptables to redirect incoming tcp traffic at port 443 to proxy port 3128
-sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 3128
+sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 3129
 
 # backup squid.conf
 sudo mv /etc/squid/squid.conf /etc/squid/squid.conf.bak
@@ -42,6 +42,7 @@ acl all src 0.0.0.0/0
 http_access allow all
 http_access deny all
 http_port 3128
+http_port 3129
 coredump_dir /var/spool/squid
 refresh_pattern ^ftp:                           1440    20%     10080
 refresh_pattern ^gopher:                        1440    0%      1440

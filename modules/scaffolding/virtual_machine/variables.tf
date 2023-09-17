@@ -22,3 +22,19 @@ variable "linux_vm_extensions" {
   default = {}
   type    = any
 }
+variable "windows_vms" {
+  default = {}
+  type    = any
+}
+variable "windows_vm_extensions" {
+  default = {}
+  type    = any
+}
+variable "vm_extension_scripts" {
+  default = {}
+  type    = any
+}
+variable "firewalls" {
+  default = {}
+  type    = any
+}

@@ -1,7 +1,7 @@
 # API managements
 resource "azurerm_api_management" "internal_apims" {
   for_each             = var.internal_apims
-  name                 = format("%s%s", each.value.name, var.random_string)
+  name                 = format("%s_%s", each.value.name, var.random_string)
   location             = var.resource_groups[each.value.rg_key].location
   resource_group_name  = var.resource_groups[each.value.rg_key].name
   publisher_name       = each.value.publisher_name
@@ -20,7 +20,7 @@ resource "azurerm_private_dns_a_record" "internal_apims_private_dns_zone_a_recor
   zone_name           = var.private_dns_zones[each.value.private_dns_zone_key].name
   resource_group_name = var.resource_groups[each.value.rg_key].name
 
-  ttl     = each.value.ttl
+  ttl = each.value.ttl
   records = [
     azurerm_api_management.internal_apims[each.value.apim_key].private_ip_addresses[0]
   ]

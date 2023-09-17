@@ -11,8 +11,8 @@ variable "subnets" {
 
 # from private_dns_zone module
 variable "private_dns_zones" {
-    default = {}
-    type = any
+  default = {}
+  type    = any
 }
 
 # Internal APIMs
@@ -23,6 +23,6 @@ variable "internal_apims" {
 
 variable "internal_apims_private_dns_zone_a_records" {
   default = {}
-  type = any
+  type    = any
 }
 

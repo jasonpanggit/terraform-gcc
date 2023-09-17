@@ -1,7 +1,7 @@
 # Route tables
 resource "azurerm_route_table" "route_tables" {
   for_each            = var.route_tables
-  name                = format("%s%s", each.value.name, var.random_string)
+  name                = format("%s_%s", each.value.name, var.random_string)
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
 

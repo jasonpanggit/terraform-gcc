@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Reference: https://docs.diladele.com/howtos/build_squid_on_ubuntu_20/update.html
+# Reference: 
 
 # add diladele apt key
 sudo wget -qO - https://packages.diladele.com/diladele_pub.asc | sudo apt-key add -

@@ -1,7 +1,7 @@
 # AKS clusters
 resource "azurerm_kubernetes_cluster" "aks_clusters" {
   for_each                = var.aks_clusters
-  name                    = format("%s%s", each.value.name, var.random_string)
+  name                    = format("%s_%s", each.value.name, var.random_string)
   location                = var.resource_groups[each.value.rg_key].location
   resource_group_name     = var.resource_groups[each.value.rg_key].name
   dns_prefix              = each.value.dns_prefix
@@ -38,7 +38,7 @@ resource "azurerm_kubernetes_cluster" "aks_clusters" {
 
 resource "azurerm_private_dns_zone_virtual_network_link" "aks_cluster_private_dns_zone_vnet_links" {
   for_each = var.aks_cluster_private_dns_zone_vnet_links
-  name     = format("%s%s", each.value.name, var.random_string)
+  name     = format("%s_%s", each.value.name, var.random_string)
 
   # aks private cluster will create a new RG
   # e.g. MC_gcc-inter-rgscjm_gcc-inter-app-aks-private-clusterscjm_eastus (MC_<resource-group-name>_<aks cluster-name>)

@@ -71,6 +71,21 @@ variable "linux_vm_extensions" {
   type    = any
 }
 
+variable "windows_vms" {
+  default = {}
+  type    = any
+}
+variable "windows_vm_extensions" {
+  default = {}
+  type    = any
+}
+
+# For loading VM extension scripts e.g. bash scripts, pwsh scripts, etc.
+variable "vm_extension_scripts" {
+  default = {}
+  type    = any
+}
+
 # Route table module
 variable "route_tables" {
   default = {}
@@ -165,6 +180,21 @@ variable "vwan_hub_route_tables" {
 }
 # Virtual WAN Route Table Routes
 variable "vwan_hub_route_table_routes" {
+  default = {}
+  type    = any
+}
+
+# Private DNS resolvers
+variable "private_dns_resolvers" {
+  default = {}
+  type    = any
+}
+variable "private_dns_resolvers_inbound_endpoints" {
+  default = {}
+  type    = any
+}
+
+variable "private_dns_resolvers_outbound_endpoints" {
   default = {}
   type    = any
 }

@@ -1,6 +1,7 @@
-variable "random_string_length" {}
 variable "location" {}
-
+variable "random_string" {
+  default = ""
+}
 variable "resource_groups" {
   default = {}
   type    = any

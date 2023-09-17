@@ -1,7 +1,7 @@
 # Firewall public IPs
 resource "azurerm_public_ip" "firewall_public_ips" {
   for_each            = var.firewall_public_ips
-  name                = format("%s%s", each.value.name, var.random_string)
+  name                = format("%s_%s", each.value.name, var.random_string)
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
 
@@ -12,26 +12,32 @@ resource "azurerm_public_ip" "firewall_public_ips" {
 # Firewalls
 resource "azurerm_firewall" "firewalls" {
   for_each            = var.firewalls
-  name                = format("%s%s", each.value.name, var.random_string)
+  name                = format("%s_%s", each.value.name, var.random_string)
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
 
-  sku_name    = each.value.sku_name
-  sku_tier    = each.value.sku_tier
+  sku_name = each.value.sku_name
+  sku_tier = each.value.sku_tier
+
   dns_servers = each.value.dns_servers
-  ip_configuration {
-    name                 = format("%s%s", each.value.ip_config_name, var.random_string)
-    subnet_id            = var.subnets[each.value.subnet_key].id
-    public_ip_address_id = azurerm_public_ip.firewall_public_ips[each.value.public_ip_key].id
+  #dns_servers = each.value.dns_server_type == "firewall" ? azurerm_firewall.firewalls[each.value.dns_server_key].ip_configuration[0].private_ip_address : (each.value.dns_server_type == "private_dns_resolver" ? var.private_dns_resolver_inbound_endpoints[each.value.dns_server_key].ip_configurations[0].priavte_ip_address : each.value.dns_server_ip)
+
+  dynamic "ip_configuration" {
+    for_each = each.value.ip_configurations
+    content {
+      name                 = format("%s_%s", ip_configuration.value.ip_config_name, var.random_string)
+      subnet_id            = var.subnets[ip_configuration.value.subnet_key].id
+      public_ip_address_id = azurerm_public_ip.firewall_public_ips[ip_configuration.value.public_ip_key].id
+    }
   }
 
   dynamic "virtual_hub" {
     for_each = each.value.virtual_hubs
     content {
-      virtual_hub_id = var.vwan_hubs[virtual_hub.value.vwan_hub_key].id
+      virtual_hub_id  = var.vwan_hubs[virtual_hub.value.vwan_hub_key].id
       public_ip_count = virtual_hub.value.public_ip_count
     }
-  } 
+  }
 
   depends_on = [
     azurerm_public_ip.firewall_public_ips

@@ -200,27 +200,31 @@ variable "private_dns_resolvers_outbound_endpoints" {
 }
 
 # Virtual desktop
-variable "virtual_desktop_workspaces" {
+variable "virtual_desktop_workspace" {
   default = {}
   type    = any
 }
-variable "virtual_desktop_host_pools" {
+variable "virtual_desktop_host_pool" {
   default = {}
   type    = any
 }
-variable "virtual_desktop_host_pool_registration_infos" {
+variable "virtual_desktop_host_pool_registration_info" {
   default = {}
   type    = any
 }
-variable "virtual_desktop_application_groups" {
+variable "virtual_desktop_desktop_application_group" {
   default = {}
   type    = any
 }
-variable "virtual_desktop_application_group_associations" {
+variable "virtual_desktop_desktop_application_group_association" {
   default = {}
   type    = any
 }
-variable "virtual_desktop_vms" {
+variable "virtual_desktop_aadj_vms" {
+  default = {}
+  type    = any
+}
+variable "virtual_desktop_fslogix_storage_account" {
   default = {}
   type    = any
 }

@@ -318,11 +318,11 @@ module "virtual_desktop" {
   # from network module
   subnets = module.network.scaffold_subnets
 
-  virtual_desktop_workspaces                     = var.virtual_desktop_workspaces
-  virtual_desktop_host_pools                     = var.virtual_desktop_host_pools
-  virtual_desktop_host_pool_registration_infos   = var.virtual_desktop_host_pool_registration_infos
-  virtual_desktop_application_groups             = var.virtual_desktop_application_groups
-  virtual_desktop_application_group_associations = var.virtual_desktop_application_group_associations
-  virtual_desktop_vms                            = var.virtual_desktop_vms
-
+  virtual_desktop_workspace                             = var.virtual_desktop_workspace
+  virtual_desktop_host_pool                             = var.virtual_desktop_host_pool
+  virtual_desktop_host_pool_registration_info           = var.virtual_desktop_host_pool_registration_info
+  virtual_desktop_desktop_application_group             = var.virtual_desktop_desktop_application_group
+  virtual_desktop_desktop_application_group_association = var.virtual_desktop_desktop_application_group_association
+  virtual_desktop_aadj_vms                              = var.virtual_desktop_aadj_vms
+  virtual_desktop_fslogix_storage_account               = var.virtual_desktop_fslogix_storage_account
 }

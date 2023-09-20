@@ -48,7 +48,7 @@ resource "azurerm_linux_virtual_machine" "linux_vms" {
 # Extensions
 resource "azurerm_virtual_machine_extension" "linux_vm_extensions" {
   for_each             = var.linux_vm_extensions
-  name                 = format("%s%s%s", each.value.name, "_ext_", var.random_string)
+  name                 = each.value.name
   virtual_machine_id   = azurerm_linux_virtual_machine.linux_vms[each.value.vm_key].id
   publisher            = "Microsoft.Azure.Extensions"
   type                 = "CustomScript"
@@ -96,7 +96,7 @@ resource "azurerm_windows_virtual_machine" "windows_vms" {
 # Extensions
 resource "azurerm_virtual_machine_extension" "windows_vm_extensions" {
   for_each             = var.windows_vm_extensions
-  name                 = format("%s_%s", each.value.name, var.random_string)
+  name                 = each.value.name
   virtual_machine_id   = azurerm_windows_virtual_machine.windows_vms[each.value.vm_key].id
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"

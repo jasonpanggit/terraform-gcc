@@ -15,7 +15,7 @@ resource "azurerm_network_interface" "vm_nics" {
 # Linux virtual machines
 resource "azurerm_linux_virtual_machine" "linux_vms" {
   for_each            = var.linux_vms
-  name                = format("%s_%s", each.value.name, var.random_string)
+  name                = each.value.name
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
 
@@ -64,7 +64,7 @@ resource "azurerm_virtual_machine_extension" "linux_vm_extensions" {
 # Windows VMs
 resource "azurerm_windows_virtual_machine" "windows_vms" {
   for_each            = var.windows_vms
-  name                = format("%s", each.value.name)
+  name                = each.value.name
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
 

@@ -25,7 +25,7 @@ resource "azurerm_virtual_desktop_host_pool" "virtual_desktop_host_pools" {
 resource "azurerm_virtual_desktop_host_pool_registration_info" "virtual_desktop_host_pool_registration_infos" {
   for_each        = var.virtual_desktop_host_pool_registration_infos
   hostpool_id     = azurerm_virtual_desktop_host_pool.virtual_desktop_host_pools[each.value.host_pool_key].id
-  expiration_date = time_rotating.avd_registration_expiration.rotation_rfc3339
+  expiration_date = time_rotating.avd_registration_expirations[each.value.registration_info_key].rotation_rfc3339
 }
 
 resource "azurerm_virtual_desktop_application_group" "virtual_desktop_desktop_application_groups" {
@@ -172,38 +172,27 @@ resource "azuread_group" "virtual_desktop_user_groups" {
 
 # # ## Azure built-in roles
 # # ## https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles
-data "azurerm_role_definition" "storage_file_data_smb_share_contributor_role" {
-  name = "Storage File Data SMB Share Contributor"
-}
-
 resource "azurerm_role_assignment" "virtual_desktop_fslogix_storage_account_role_assignments" {
-  for_each           = var.virtual_desktop_user_groups
-  scope              = azurerm_storage_account.virtual_desktop_fslogix_storage_accounts[each.value.storage_account_key].id
-  role_definition_id = data.azurerm_role_definition.storage_file_data_smb_share_contributor_role.id
-  principal_id       = azuread_group.virtual_desktop_user_groups[each.value.user_group_key].id
+  for_each             = var.virtual_desktop_user_groups
+  scope                = azurerm_storage_account.virtual_desktop_fslogix_storage_accounts[each.value.storage_account_key].id
+  role_definition_name = "Storage File Data SMB Share Contributor"
+  principal_id         = azuread_group.virtual_desktop_user_groups[each.value.user_group_key].id
 }
 
 # assign virtual machine user login role to internet resource group
-data "azurerm_role_definition" "virtual_machine_user_login_role" {
-  name = "Virtual Machine User Login"
-}
-
 resource "azurerm_role_assignment" "virtual_desktop_user_group_vm_user_login_resource_group_role_assignments" {
-  for_each           = var.virtual_desktop_user_groups
-  scope              = var.resource_groups[each.value.rg_key].id
-  role_definition_id = data.azurerm_role_definition.virtual_machine_user_login_role.id
-  principal_id       = azuread_group.virtual_desktop_user_groups[each.value.user_group_key].id
+  for_each             = var.virtual_desktop_user_groups
+  scope                = var.resource_groups[each.value.rg_key].id
+  role_definition_name = "Virtual Machine User Login"
+  principal_id         = azuread_group.virtual_desktop_user_groups[each.value.user_group_key].id
 }
 
 # assign user group to application group
-data "azurerm_role_definition" "desktop_virtualization_user_role" {
-  name = "Desktop Virtualization User"
-}
 resource "azurerm_role_assignment" "virtual_desktop_application_group_user_group_assignment" {
-  for_each           = var.virtual_desktop_user_groups
-  scope              = azurerm_virtual_desktop_application_group.virtual_desktop_desktop_application_groups[each.value.application_group_key].id
-  role_definition_id = data.azurerm_role_definition.desktop_virtualization_user_role.id
-  principal_id       = azuread_group.virtual_desktop_user_groups[each.value.user_group_key].id
+  for_each             = var.virtual_desktop_user_groups
+  scope                = azurerm_virtual_desktop_application_group.virtual_desktop_desktop_application_groups[each.value.application_group_key].id
+  role_definition_name = "Desktop Virtualization User"
+  principal_id         = azuread_group.virtual_desktop_user_groups[each.value.user_group_key].id
 
   depends_on = [
     azuread_group.virtual_desktop_user_groups,
@@ -211,7 +200,8 @@ resource "azurerm_role_assignment" "virtual_desktop_application_group_user_group
   ]
 }
 
-resource "time_rotating" "avd_registration_expiration" {
+resource "time_rotating" "avd_registration_expirations" {
   # Must be between 1 hour and 30 days
-  rotation_days = 29
+  for_each      = var.virtual_desktop_host_pool_registration_infos
+  rotation_days = each.value.rotation_days
 }

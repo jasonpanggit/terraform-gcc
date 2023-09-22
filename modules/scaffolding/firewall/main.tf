@@ -44,8 +44,8 @@ resource "azurerm_firewall" "firewalls" {
   ]
 }
 
-resource "azurerm_firewall_application_rule_collection" "firewall_app_rules" {
-  for_each            = var.firewall_app_rules
+resource "azurerm_firewall_application_rule_collection" "firewall_app_rule_collections" {
+  for_each            = var.firewall_app_rule_collections
   name                = each.value.name
   azure_firewall_name = azurerm_firewall.firewalls[each.value.firewall_key].name
   resource_group_name = var.resource_groups[each.value.rg_key].name
@@ -57,7 +57,9 @@ resource "azurerm_firewall_application_rule_collection" "firewall_app_rules" {
     content {
       name             = rule.value.name
       source_addresses = rule.value.source_addresses
-      target_fqdns     = rule.value.target_fqdns
+      fqdn_tags        = lookup(rule.value, "fqdn_tags", null) 
+      target_fqdns     = lookup(rule.value, "target_fqdns", null)
+      
       dynamic "protocol" {
         for_each = rule.value.protocols
         content {
@@ -65,6 +67,26 @@ resource "azurerm_firewall_application_rule_collection" "firewall_app_rules" {
           type = protocol.value.type
         }
       }
+    }
+  }
+}
+
+resource "azurerm_firewall_network_rule_collection" "firewall_network_rule_collections" {
+  for_each            = var.firewall_network_rule_collections
+  name                = each.value.name
+  azure_firewall_name = azurerm_firewall.firewalls[each.value.firewall_key].name
+  resource_group_name = var.resource_groups[each.value.rg_key].name
+  priority            = each.value.priority
+  action              = each.value.action
+
+  dynamic "rule" {
+    for_each = each.value.rules
+    content {
+      name                  = rule.value.name
+      source_addresses      = rule.value.source_addresses
+      destination_addresses = rule.value.destination_addresses
+      destination_ports     = rule.value.destination_ports
+      protocols             = rule.value.protocols
     }
   }
 }

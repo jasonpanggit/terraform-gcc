@@ -1,7 +1,9 @@
 resource "azurerm_private_dns_zone" "private_dns_zones" {
-  for_each            = var.private_dns_zones
-  name                = each.value.name
+  for_each = var.private_dns_zones
+  # replace region with location
+  name                = each.value.name == "privatelink.region.azmk8s.io" ? replace(each.value.name, "region", lower(var.resource_groups[each.value.rg_key].location)) : each.value.name
   resource_group_name = var.resource_groups[each.value.rg_key].name
+
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_vnet_links" {

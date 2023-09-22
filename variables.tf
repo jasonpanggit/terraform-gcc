@@ -41,8 +41,14 @@ variable "firewalls" {
   default = {}
   type    = any
 }
-# Firewall app rules
-variable "firewall_app_rules" {
+
+# Firewall app rule collections
+variable "firewall_app_rule_collections" {
+  default = {}
+  type    = any
+}
+# Firewall network rule collections
+variable "firewall_network_rule_collections" {
   default = {}
   type    = any
 }
@@ -117,6 +123,10 @@ variable "aks_clusters" {
   default = {}
   type    = any
 }
+variable "aks_cluster_node_pools" {
+  default = {}
+  type    = any
+}
 variable "aks_cluster_private_dns_zone_vnet_links" {
   default = {}
   type    = any
@@ -130,6 +140,10 @@ variable "aks_cluster_jumphost_vms" {
   type    = any
 }
 variable "aks_cluster_jumphost_vm_extensions" {
+  default = {}
+  type    = any
+}
+variable "user_assigned_identities" {
   default = {}
   type    = any
 }

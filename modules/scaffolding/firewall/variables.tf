@@ -27,11 +27,17 @@ variable "firewalls" {
   type    = any
 }
 
-# Firewall app rules
-variable "firewall_app_rules" {
+# Firewall app rule collections
+variable "firewall_app_rule_collections" {
   default = {}
   type    = any
 }
+# Firewall network rule collections
+variable "firewall_network_rule_collections" {
+  default = {}
+  type    = any
+}
+
 
 # from private dns resolver module
 # variable "private_dns_resolver_inbound_endpoints" {

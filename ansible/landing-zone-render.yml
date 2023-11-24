@@ -6,4 +6,4 @@
     - name: Render config for landing zone
       template:
         src: "landing-zone-template.j2"
-        dest: "landing-zone.tfvars"
+        dest: "../generated-landing-zone.tfvars"

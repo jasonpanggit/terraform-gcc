@@ -1,0 +1,17 @@
+---
+subscription_id: 
+tenant_id: 
+client_id: 
+client_secret: 
+
+random_string_length: 4
+location: "southeastasia"
+
+internet_ingress_zone: 1
+internet_egress_zone: 1
+intranet_ingress_zone: 1
+intranet_egress_zone: 1
+workload_zone: 1
+management_zone: 1
+devops_zone: 1
+dns_forwarding_zone: 1

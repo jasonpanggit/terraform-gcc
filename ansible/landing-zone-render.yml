@@ -1,10 +1,9 @@
 ---
-- hosts: landing-zone-config
-  #gather_facts: no
-  #connection: local
-
+- hosts: localhost
   tasks:
+    - name: Load config
+      include_vars: landing-zone-config.yml
     - name: Render config for landing zone
       template:
-        src: "templates/landing-zone-template.j2"
-        dest: "out/landing-zone.tfvars"
+        src: "landing-zone-template.j2"
+        dest: "landing-zone.tfvars"

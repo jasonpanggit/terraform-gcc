@@ -163,7 +163,7 @@ virtual_networks = {
   }
   {% endif %}
 
-  {% if dns_zone | trim == '1' %}
+  {% if dns_forwarding_zone | trim == '1' %}
   # dns vnet
   dns_forwarding_vnet = {
     rg_key = "dns_forwarding_rg"

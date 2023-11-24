@@ -1,0 +1,10 @@
+---
+- hosts: landing-zone-config
+  #gather_facts: no
+  #connection: local
+
+  tasks:
+    - name: Render config for landing zone
+      template:
+        src: "templates/landing-zone-template.j2"
+        dest: "out/landing-zone.tfvars"

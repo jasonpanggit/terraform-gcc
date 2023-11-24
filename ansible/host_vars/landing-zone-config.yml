@@ -1,0 +1,13 @@
+subscription_id: "41b4797a-6e22-400e-90ef-b99464687cce"
+tenant_id: "dc945b7c-0e8b-4876-b973-7be7827985bc"
+client_id: "c36ee064-ea8f-49fc-888e-c456d7acb312"
+client_secret: "WtF8Q~38Nc2TdxFVte~QEZHOXYaWn5fqnOqKWbxg"
+
+internet_ingress_zone: 1
+internet_egress_zone: 1
+intranet_ingress_zone: 1
+intranet_egress_zone: 1
+workload_zone: 1
+management_zone: 1
+devops_zone: 1
+dns_forwarding_zone: 1

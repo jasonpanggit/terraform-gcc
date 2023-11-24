@@ -1,9 +1,10 @@
 # Terraform for GCC scaffolding
-Terraform for GCC scaffolding is an terraform template which quickly provisions a GCC scaffolding for the following scenarios
+Terraform for GCC scaffolding is a terraform module which quickly provisions a GCC scaffolding for the following scenarios
 
-* AVD AAD join VMs
-* Intranet AKS private cluster
-* On-premise DNS forwarding to Intranet
+* Basic Intranet Zone vnet provisioning 
+* AVD AAD join VMs in Internet Zone
+* AKS private cluster in Intranet Zone with egress restriction using Azure Firewall
+* On-premise DNS forwarding to Intranet Zone
 
 ## Project Structure
 * modules/scaffolding - containing the module that does the scaffolding

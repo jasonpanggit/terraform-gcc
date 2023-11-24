@@ -535,8 +535,6 @@ aks_cluster_node_pools = {
 route_tables = {
   aks_intranet_firewall_route_table = {
     rg_key                        = "intranet_rg"
-    rt_key                        = "aks_intranet_firewall_route_table"
-    subnet_key                    = "intranet_aks_system_subnet"
     name                          = "intranet_aks_system_route_table"
     disable_bgp_route_propagation = true
     routes = [
@@ -551,6 +549,15 @@ route_tables = {
     tags = {}
   }
 }
+
+# Route tables associations
+route_tables_associations = {
+  aks_intranet_firewall_route_table_assoc = {
+    subnet_key      = "intranet_aks_system_subnet"
+    route_table_key = "aks_intranet_firewall_route_table"
+  }
+}
+
 
 ##########################################
 # Private DNS zone module

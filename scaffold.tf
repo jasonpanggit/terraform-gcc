@@ -15,10 +15,6 @@ module "network" {
   virtual_networks = var.virtual_networks
   subnets          = var.subnets
   vnet_peers       = var.vnet_peers
-
-  # depends_on = [
-  #   module.resource_group
-  # ]
 }
 
 module "nsg" {
@@ -32,10 +28,6 @@ module "nsg" {
   # NSGs
   network_security_groups             = var.network_security_groups
   network_security_group_associations = var.network_security_group_associations
-
-  # depends_on = [
-  #   module.network
-  # ]
 }
 
 module "firewall" {
@@ -59,12 +51,6 @@ module "firewall" {
   firewalls                         = var.firewalls
   firewall_app_rule_collections     = var.firewall_app_rule_collections
   firewall_network_rule_collections = var.firewall_network_rule_collections
-
-  # depends_on = [
-  #   module.resource_group,
-  #   module.network,
-  #   module.vwan
-  # ]
 }
 
 module "bastion" {
@@ -80,10 +66,6 @@ module "bastion" {
   # Bastions
   bastion_public_ips = var.bastion_public_ips
   bastions           = var.bastions
-
-  # depends_on = [
-  #   module.network
-  # ]
 }
 
 module "vm" {
@@ -105,11 +87,6 @@ module "vm" {
 
   vm_extension_scripts = var.vm_extension_scripts
   firewalls            = module.firewall.scaffold_firewalls
-
-  # depends_on = [
-  #   module.resource_group,
-  #   module.network
-  # ]
 }
 
 module "route_table" {
@@ -130,13 +107,7 @@ module "route_table" {
 
   # Route tables
   route_tables = var.route_tables
-
-  # depends_on = [
-  #   module.resource_group,
-  #   module.network,
-  #   module.firewall,
-  #   module.vm
-  # ]
+  route_tables_associations = var.route_tables_associations
 }
 
 module "apim" {
@@ -155,12 +126,6 @@ module "apim" {
   # APIMs
   internal_apims                            = var.internal_apims
   internal_apims_private_dns_zone_a_records = var.internal_apims_private_dns_zone_a_records
-
-  # depends_on = [
-  #   module.resource_group,
-  #   module.network,
-  #   module.private_dns_zone
-  # ]
 }
 
 module "private_dns_zone" {
@@ -176,11 +141,6 @@ module "private_dns_zone" {
   # Private DNS zones
   private_dns_zones           = var.private_dns_zones
   private_dns_zone_vnet_links = var.private_dns_zone_vnet_links
-
-  # depends_on = [
-  #   module.resource_group,
-  #   module.network
-  # ]
 }
 
 module "aks_cluster" {
@@ -207,13 +167,6 @@ module "aks_cluster" {
   aks_clusters = var.aks_clusters
   # aks_cluster_private_dns_zone_vnet_links = var.aks_cluster_private_dns_zone_vnet_links
   user_assigned_identities = var.user_assigned_identities
-
-  # depends_on = [
-  #   module.resource_group,
-  #   module.network,
-  #   module.firewall,
-  #   module.vm
-  # ]
 }
 
 module "app_service" {
@@ -229,11 +182,6 @@ module "app_service" {
   # ASEv3
   app_service_environments_v3 = var.app_service_environments_v3
   app_service_plans           = var.app_service_plans
-
-  # depends_on = [
-  #   module.resource_group,
-  #   module.network
-  # ]
 }
 
 module "storage_account" {
@@ -253,12 +201,6 @@ module "storage_account" {
   storage_accounts                                            = var.storage_accounts
   storage_account_private_endpoints                           = var.storage_account_private_endpoints
   storage_account_private_endpoint_private_dns_zone_a_records = var.storage_account_private_endpoint_private_dns_zone_a_records
-
-  # depends_on = [
-  #   module.resource_group,
-  #   module.network,
-  #   module.private_dns_zone
-  # ]
 }
 
 module "vwan" {
@@ -283,13 +225,6 @@ module "vwan" {
   vwan_hub_connections  = var.vwan_hub_connections
   vwan_hub_route_tables = var.vwan_hub_route_tables
   # vwan_hub_route_table_routes = var.vwan_hub_route_table_routes
-
-  # depends_on = [
-  #   module.resource_group,
-  #   module.network,
-  #   module.firewall,
-  #   module.vm
-  # ]
 }
 module "private_dns_resolver" {
   source = "./modules/scaffolding/private_dns_resolver"
@@ -306,11 +241,6 @@ module "private_dns_resolver" {
   private_dns_resolvers                    = var.private_dns_resolvers
   private_dns_resolvers_inbound_endpoints  = var.private_dns_resolvers_inbound_endpoints
   private_dns_resolvers_outbound_endpoints = var.private_dns_resolvers_outbound_endpoints
-
-  # depends_on = [
-  #   module.resource_group,
-  #   module.network
-  # ]
 }
 
 module "virtual_desktop" {
@@ -334,5 +264,4 @@ module "virtual_desktop" {
   virtual_desktop_fslogix_storage_accounts            = var.virtual_desktop_fslogix_storage_accounts
   virtual_desktop_fslogix_storage_account_file_shares = var.virtual_desktop_fslogix_storage_account_file_shares
   virtual_desktop_user_groups                         = var.virtual_desktop_user_groups
-
 }

@@ -27,3 +27,8 @@ variable "route_tables" {
   default = {}
   type    = any
 }
+
+variable "route_tables_associations" {
+  default = {}
+  type    = any
+}

@@ -98,6 +98,11 @@ variable "route_tables" {
   type    = any
 }
 
+variable "route_tables_associations" {
+  default = {}
+  type    = any
+}
+
 # API management module
 variable "internal_apims" {
   default = {}

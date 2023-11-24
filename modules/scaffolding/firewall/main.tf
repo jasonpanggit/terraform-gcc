@@ -57,9 +57,9 @@ resource "azurerm_firewall_application_rule_collection" "firewall_app_rule_colle
     content {
       name             = rule.value.name
       source_addresses = rule.value.source_addresses
-      fqdn_tags        = lookup(rule.value, "fqdn_tags", null) 
+      fqdn_tags        = lookup(rule.value, "fqdn_tags", null)
       target_fqdns     = lookup(rule.value, "target_fqdns", null)
-      
+
       dynamic "protocol" {
         for_each = rule.value.protocols
         content {

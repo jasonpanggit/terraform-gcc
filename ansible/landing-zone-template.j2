@@ -23,52 +23,52 @@ location             = "{{ location }}"
 resource_groups = {
   {% if internet_ingress_zone | trim == '1' %}
   internet_ingress_rg = {
-    name = "internet_ingress_rg"
+    name = {{ internet_ingress_resource_group_name }}
   }
   {% endif %}
 
   {% if internet_egress_zone | trim == '1' %}
   # optional
   internet_egress_rg = {
-    name = "internet_egress_rg"
+    name = {{ internet_egress_resource_group_name }}
   }
   {% endif %}
 
   {% if intranet_ingress_zone | trim == '1' %}
   intranet_ingress_rg = {
-    name = "intranet_ingress_rg"
+    name = {{ intranet_ingress_resource_group_name }}
   }
   {% endif %}
 
   {% if intranet_egress_zone | trim == '1' %}
   # optional
   intranet_egress_rg = {
-    name = "intranet_egress_rg"
+    name = {{ intranet_egress_resource_group_name }}
   }
   {% endif %}
 
   {% if workload_zone | trim == '1' %}
   workload_rg = {
-    name = "workload_rg"
+    name = {{ workload_resource_group_name }}
   }
   {% endif %}
 
   {% if management_zone | trim == '1' %}
   mgmt_rg = {
-    name = "mgmt_rg"
+    name = {{ management_resource_group_name }}
   }
   {% endif %}
 
   {% if devops_zone | trim == '1' %}
   devops_rg = {
-    name = "devops_rg"
+    name = {{ devops_resource_group_name }}
   }
   {% endif %}
 
   {% if dns_forwarding_zone | trim == '1' %}
   # for on-premise GSIB to resolve private endpoints e.g. synapse web endpoint
   dns_forwarding_rg = {
-    name = "dns_forwarding_rg"
+    name = {{ dns_forwarding_resource_group_name }}
   }
   {% endif %}
 }
@@ -83,8 +83,8 @@ virtual_networks = {
   # internet ingress vnet
   internet_ingress_vnet = {
     rg_key = "internet_ingress_rg"
-    name   = "internet_ingress_vnet"
-    address_space = ["100.0.0.0/24"]
+    name   = {{ internet_ingress_vnet_name }}
+    address_space = {{ internet_ingress_vnet_cidr }}
     tags          = {
       "Compartment" = "Public (Non-GEN)"
     }
@@ -95,8 +95,8 @@ virtual_networks = {
   # internet egress vnet
   internet_egress_vnet = {
     rg_key = "internet_egress_rg"
-    name   = "internet_egress_vnet"
-    address_space = ["100.0.1.0/24"]
+    name   = {{ internet_egress_vnet_name }}
+    address_space = {{ internet_egress_vnet_cidr }}
     tags          = {
       "Compartment" = "Public (Non-GEN)"
     }
@@ -107,8 +107,8 @@ virtual_networks = {
   # intranet ingress vnet
   intranet_ingress_vnet = {
     rg_key = "intranet_ingress_rg"
-    name   = "intranet_ingress_vnet"
-    address_space = ["10.0.0.0/25"]
+    name   = {{ intranet_ingress_vnet_name }}
+    address_space = {{ intranet_ingress_vnet_cidr }}
     tags          = {
       "Compartment" = "Public (GEN)"
     }
@@ -119,8 +119,8 @@ virtual_networks = {
   # intranet egress vnet
   intranet_egress_vnet = {
     rg_key = "intranet_egress_rg"
-    name   = "intranet_egress_vnet"
-    address_space = ["10.0.1.0/25"]
+    name   = {{ intranet_egress_vnet_name }}
+    address_space = {{ intranet_egress_vnet_cidr }}
     tags          = {
       "Compartment" = "Public (GEN)"
     }
@@ -131,8 +131,8 @@ virtual_networks = {
   # workload vnet
   workload_vnet = {
     rg_key = "workload_rg"
-    name   = "workload_vnet"
-    address_space = ["100.0.2.0/24"]
+    name   = {{ workload_vnet_name }}
+    address_space = {{ workload_vnet_cidr }}
     tags          = {
       "Compartment" = "Private (Non-GEN)"
     }
@@ -143,8 +143,8 @@ virtual_networks = {
   # management vnet
   mgmt_vnet = {
     rg_key = "mgmt_rg"
-    name   = "mgmt_vnet"
-    address_space = ["10.0.3.0/25"]
+    name   = {{ management_vnet_name }}
+    address_space = {{ management_vnet_cidr }}
     tags          = {
       "Compartment" = "Private (GEN)"
     }
@@ -155,8 +155,8 @@ virtual_networks = {
   # devops vnet
   devops_vnet = {
     rg_key = "devops_rg"
-    name   = "devops_vnet"
-    address_space = ["100.0.3.0/24"]
+    name   = {{ devops_vnet_name }}
+    address_space = {{ devops_vnet_cidr }}
     tags          = {
       "Compartment" = "Private (Non-GEN)" # can be Agency managed as well for SHIP-HATS as need to provision VPN Gateway for S2S
     }
@@ -167,8 +167,8 @@ virtual_networks = {
   # dns vnet
   dns_forwarding_vnet = {
     rg_key = "dns_forwarding_rg"
-    name   = "dns_forwarding_vnet"
-    address_space = ["10.0.2.0/25"]
+    name   = {{ dns_forwarding_vnet_name }}
+    address_space = {{ dns_forwarding_vnet_cidr }}
     tags          = {
       "Compartment" = "Public (GEN)" 
     }
@@ -179,6 +179,7 @@ virtual_networks = {
 # Virtual network peerings
 vnet_peers = {
 
+  {% if (internet_ingress_zone | trim == '1') and (workload_zone | trim == '1') %}
   # internet ingress and workload 
   internet_ingress_workload_vnet_peer = {
     rg_key                       = "internet_ingress_rg"
@@ -190,8 +191,10 @@ vnet_peers = {
     allow_gateway_transit        = "false"
     use_remote_gateways          = "false"
   }
+  {% endif %}
 
-  # internet ingress and workload 
+  {% if (internet_egress_zone | trim == '1') and (workload_zone | trim == '1') %}
+  # internet egress and workload 
   internet_egress_workload_vnet_peer = {
     rg_key                       = "internet_egress_rg"
     vnet_key                     = "internet_egress_vnet"
@@ -202,7 +205,9 @@ vnet_peers = {
     allow_gateway_transit        = "false"
     use_remote_gateways          = "false"
   }
+  {% endif %}
 
+  {% if (intranet_ingress_zone | trim == '1') and (workload_zone | trim == '1') %}
   # intranet ingress and workload 
   intranet_ingress_workload_vnet_peer = {
     rg_key                       = "intranet_ingress_rg"
@@ -214,7 +219,9 @@ vnet_peers = {
     allow_gateway_transit        = "false"
     use_remote_gateways          = "false"
   }
+  {% endif %}
 
+  {% if (intranet_egress_zone | trim == '1') and (workload_zone | trim == '1') %}
   # intranet egress and workload 
   intranet_egress_workload_vnet_peer = {
     rg_key                       = "intranet_egress_rg"
@@ -226,7 +233,9 @@ vnet_peers = {
     allow_gateway_transit        = "false"
     use_remote_gateways          = "false"
   }
+  {% endif %}
 
+  {% if (internet_egress_zone | trim == '1') and (management_zone | trim == '1') %}
   # mgmt and internet egress 
   mgmt_internet_egress_vnet_peer = {
     rg_key                       = "mgmt_rg"
@@ -238,7 +247,21 @@ vnet_peers = {
     allow_gateway_transit        = "false"
     use_remote_gateways          = "false"
   }
+  {% elif (internet_egress_zone | trim == '0') and (management_zone | trim == '1') %}
+  # mgmt and internet ingress 
+  mgmt_internet_ingress_vnet_peer = {
+    rg_key                       = "mgmt_rg"
+    vnet_key                     = "mgmt_vnet"
+    remote_vnet_key              = "internet_ingress_vnet"
+    name                         = "mgmt_internet_ingress_vnet_peering"
+    allow_virtual_network_access = "true"
+    allow_forwarded_traffic      = "true"
+    allow_gateway_transit        = "false"
+    use_remote_gateways          = "false"
+  }
+  {% endif %}
 
+  {% if (management_zone | trim == '1') and (workload_zone | trim == '1') %}
   # mgmt and workload 
   mgmt_workload_vnet_peer = {
     rg_key                       = "mgmt_rg"
@@ -250,7 +273,9 @@ vnet_peers = {
     allow_gateway_transit        = "false"
     use_remote_gateways          = "false"
   }
+  {% endif %}
 
+  {% if (devops_zone | trim == '1') and (internet_egress | trim == '1') %}
   # devops and internet egress 
   devops_internet_egress_vnet_peer = {
     rg_key                       = "devops_rg"
@@ -262,7 +287,21 @@ vnet_peers = {
     allow_gateway_transit        = "false"
     use_remote_gateways          = "false"
   }
+  {% elif (devops_zone | trim == '1') and (internet_egress_zone | trim == '0') %}
+  # devops and internet ingress 
+  devops_internet_ingress_vnet_peer = {
+    rg_key                       = "devops_rg"
+    vnet_key                     = "devops_vnet"
+    remote_vnet_key              = "internet_ingress_vnet"
+    name                         = "devops_internet_ingress_vnet_peering"
+    allow_virtual_network_access = "true"
+    allow_forwarded_traffic      = "true"
+    allow_gateway_transit        = "false"
+    use_remote_gateways          = "false"
+  }
+  {% endif %}
 
+  {% if (devops_zone | trim == '1') and (workload_zone | trim == '1') %}
   # devops and workload
   devops_workload_vnet_peer = {
     rg_key                       = "devops_rg"
@@ -274,7 +313,7 @@ vnet_peers = {
     allow_gateway_transit        = "false"
     use_remote_gateways          = "false"
   }
-
+  {% endif %}
 }
 
 # Subnets
@@ -282,149 +321,183 @@ subnets = {
   # /24 = 256, /25 = 128, /26 = 64, /27 = 32, /28 = 16, /29 = 8, /30 = 4, /31 = 2, /32 = 1
   # every subnet has 5 reserved IP addresses (first 4 and last 1)
 
+  {% if (internet_ingress_zone | trim == '1') and (internet_ingress_fw | trim == '1') %}
   # internet ingress firewall subnet
   internet_ingress_firewall_subnet = {
     rg_key           = "internet_ingress_rg"
     vnet_key         = "internet_ingress_vnet"
-    name             = "AzureFirewallSubnet"
-    address_prefixes = ["100.0.0.0/27"]
+    name             = {{ internet_ingress_fw_subnet_name }}
+    address_prefixes = {{ internet_ingress_fw_subnet_cidr }}
   }
+  {% endif %}
 
+  {% if (internet_ingress_zone | trim == '1') and (internet_ingress_app_gw | trim == '1') %}
   # internet ingress app gw subnet
   internet_ingress_app_gw_subnet = {
     rg_key           = "internet_ingress_rg"
     vnet_key         = "internet_ingress_vnet"
-    name             = "AppGwSubnet"
-    address_prefixes = ["100.0.0.32/27"]
+    name             = {{ internet_ingress_appgw_subnet_name }}
+    address_prefixes = {{ internet_ingress_appgw_subnet_cidr }}
   }
+  {% endif %}
 
+  {% if (internet_ingress_zone | trim == '1') and (internet_ingress_apim | trim == '1') %}
   # internet ingress apim subnet
   internet_ingress_apim_subnet = {
     rg_key           = "internet_ingress_rg"
     vnet_key         = "internet_ingress_vnet"
-    name             = "ApimSubnet"
-    address_prefixes = ["100.0.0.64/27"]
+    name             = {{ internet_ingress_apim_subnet_name }}
+    address_prefixes = {{ internet_ingress_apim_subnet_cidr }}
   }
+  {% endif %}
 
-  # internet ingress egress sftp subnet
+  {% if (internet_ingress_zone | trim == '1') and (internet_ingress_sftp | trim == '1') %}
+  # internet ingress sftp subnet
   internet_ingress_sftp_subnet = {
     rg_key           = "internet_ingress_rg"
     vnet_key         = "internet_ingress_vnet"
-    name             = "SftpSubnet"
-    address_prefixes = ["100.0.0.96/27"]
+    name             = {{ internet_ingress_sftp_subnet_name }}
+    address_prefixes = {{ internet_ingress_sftp_subnet_cidr }}
   }
+  {% endif %}
 
+  {% if (internet_egress_zone | trim == '1') and (internet_egress_fw | trim == '1') %}
   # internet egress firewall subnet
   internet_egress_firewall_subnet = {
     rg_key           = "internet_egress_rg"
     vnet_key         = "internet_egress_vnet"
-    name             = "AzureFirewallSubnet"
-    address_prefixes = ["100.0.1.0/27"]
+    name             = {{ internet_egress_fw_subnet_name }}
+    address_prefixes = {{ internet_egress_fw_subnet_cidr }}
   }
+  {% endif %}
 
+  {% if (intranet_ingress_zone | trim == '1') and (intranet_ingress_fw | trim == '1') %}
   # intranet ingress firewall subnet
   intranet_ingress_firewall_subnet = {
     rg_key           = "intranet_ingress_rg"
     vnet_key         = "intranet_ingress_vnet"
-    name             = "AzureFirewallSubnet"
-    address_prefixes = ["10.0.0.0/27"]
+    name             = {{ intranet_ingress_fw_subnet_name }}
+    address_prefixes = {{ intranet_ingress_fw_subnet_cidr }}
   }
+  {% endif %}
 
+  {% if (intranet_ingress_zone | trim == '1') and (intranet_ingress_app_gw | trim == '1') %}
   # intranet ingress app gw subnet
   intranet_ingress_app_gw_subnet = {
     rg_key           = "intranet_ingress_rg"
     vnet_key         = "intranet_ingress_vnet"
-    name             = "AppGwSubnet"
-    address_prefixes = ["10.0.0.32/27"]
+    name             = {{ intranet_ingress_appgw_subnet_name }}
+    address_prefixes = {{ intranet_ingress_appgw_subnet_cidr }}
   }
+  {% endif %}
 
+  {% if (intranet_ingress_zone | trim == '1') and (intranet_ingress_apim | trim == '1') %}
   # intranet ingress apim subnet
   intranet_ingress_apim_subnet = {
     rg_key           = "intranet_ingress_rg"
     vnet_key         = "intranet_ingress_vnet"
-    name             = "ApimSubnet"
-    address_prefixes = ["10.0.0.64/27"]
+    name             = {{ intranet_ingress_apim_subnet_name }}
+    address_prefixes = {{ intranet_ingress_apim_subnet_cidr }}
   }
+  {% endif %}
 
+  {% if (intranet_ingress_zone | trim == '1') and (intranet_ingress_sftp | trim == '1') %}
   # intranet ingress sftp subnet
   intranet_ingress_sftp_subnet = {
     rg_key           = "intranet_ingress_rg"
     vnet_key         = "intranet_ingress_vnet"
-    name             = "SftpSubnet"
-    address_prefixes = ["10.0.0.96/27"]
+    name             = {{ intranet_ingress_sftp_subnet_name }}
+    address_prefixes = {{ intranet_ingress_sftp_subnet_cidr }}
   }
+  {% endif %}
 
+  {% if (intranet_egress_zone | trim == '1') and (intranet_egress_fw | trim == '1') %}
   # intranet egress firewall subnet
   intranet_egress_firewall_subnet = {
     rg_key           = "intranet_egress_rg"
     vnet_key         = "intranet_egress_vnet"
-    name             = "AzureFirewallSubnet"
-    address_prefixes = ["10.0.1.0/27"]
+    name             = {{ intranet_egress_fw_subnet_name }}
+    address_prefixes = {{ intranet_egress_fw_subnet_cidr }}
   }
+  {% endif %}
 
-  # private dns resolver inbound subnet
-  private_dns_resolver_inbound_subnet = {
-    rg_key           = "dns_forwarding_rg"
-    vnet_key         = "dns_forwarding_vnet"
-    name             = "PrivateDnsResolverInboundSubnet"
-    address_prefixes = ["10.0.2.0/27"]
-  }
-
-  # private dns resolver outbound subnet
-  private_dns_resolver_outbound_subnet = {
-    rg_key           = "dns_forwarding_rg"
-    vnet_key         = "dns_forwarding_vnet"
-    name             = "PrivateDnsResolverOutboundSubnet"
-    address_prefixes = ["10.0.2.32/27"]
-  }
-
+  {% if (workload_zone | trim == '1') and (workload_app | trim == '1') %}
   # workload app subnet
   workload_app_subnet = {
     rg_key           = "workload_rg"
     vnet_key         = "workload_vnet"
-    name             = "WorkloadAppSubnet"
-    address_prefixes = ["100.0.2.0/25"]
+    name             = {{ workload_app_subnet_name }}
+    address_prefixes = {{ workload_app_subnet_cidr }}
   }
+  {% endif %}
 
+  {% if (workload_zone | trim == '1') and (workload_db | trim == '1') %}
   # workload db subnet
   workload_db_subnet = {
     rg_key           = "workload_rg"
     vnet_key         = "workload_vnet"
-    name             = "WorkloadDbSubnet"
-    address_prefixes = ["100.0.2.128/25"]
+    name             = {{ workload_db_subnet_name }}
+    address_prefixes = {{ workload_db_subnet_cidr }}
   }
+  {% endif %}
 
+  {% if (management_zone | trim == '1') and (management_bastion | trim == '1') %}
   # mgmt bastion subnet
   mgmt_bastion_subnet = {
     rg_key           = "mgmt_rg"
     vnet_key         = "mgmt_vnet"
-    name             = "AzureBastionSubnet"
-    address_prefixes = ["10.0.3.0/27"]
+    name             = {{ management_bastion_subnet_name }}
+    address_prefixes = {{ management_bastion_subnet_cidr }}
   }
+  {% endif %}
 
+  {% if (management_zone | trim == '1') and (management_adds | trim == '1') %}
   # mgmt ADDS subnet
   mgmt_adds_subnet = {
     rg_key           = "mgmt_rg"
     vnet_key         = "mgmt_vnet"
-    name             = "AddsSubnet"
-    address_prefixes = ["10.0.3.32/27"]
+    name             = {{ management_adds_subnet_name }}
+    address_prefixes = {{ management_adds_subnet_cidr }}
   }
+  {% endif %}
 
+  {% if (management_zone | trim == '1') and (management_patch | trim == '1') %}
   # mgmt patch subnet
   mgmt_patch_subnet = {
     rg_key           = "mgmt_rg"
     vnet_key         = "mgmt_vnet"
-    name             = "PatchSubnet"
-    address_prefixes = ["10.0.3.64/27"]
+    name             = {{ management_patch_subnet_name }}
+    address_prefixes = {{ management_patch_subnet_cidr }}
   }
+  {% endif %}
 
-  # devops subnet
-  devops_subnet = {
+  {% if (devops_zone | trim == '1') and (devops_runner | trim == '1')%}
+  # devops runner subnet
+  devops_runner_subnet = {
     rg_key           = "devops_rg"
     vnet_key         = "devops_vnet"
-    name             = "DevOpsSubnet"
-    address_prefixes = ["100.0.3.0/27"]
+    name             = {{ devops_runner_subnet_name }}
+    address_prefixes = {{ devops_runner_subnet_cidr }}
   }
+  {% endif %}
+
+  {% if (dns_forwarding_zone | trim == '1') and (dns_forwarding_private_dns_resolver | trim == '1') %}
+  # private dns resolver inbound subnet
+  private_dns_resolver_inbound_subnet = {
+    rg_key           = "dns_forwarding_rg"
+    vnet_key         = "dns_forwarding_vnet"
+    name             = {{ dns_forwarding_private_dns_resolver_inbound_subnet_name }}
+    address_prefixes = {{ dns_forwarding_private_dns_resolver_inbound_subnet_cidr }}
+  }
+  
+  # private dns resolver outbound subnet
+  private_dns_resolver_outbound_subnet = {
+    rg_key           = "dns_forwarding_rg"
+    vnet_key         = "dns_forwarding_vnet"
+    name             = {{ dns_forwarding_private_dns_resolver_outbound_subnet_name }}
+    address_prefixes = {{ dns_forwarding_private_dns_resolver_outbound_subnet_cidr }}
+  }
+  {% endif %}
 }
 
 ##########################################
@@ -485,9 +558,10 @@ route_tables_associations = {
 
 # Network security groups
 network_security_groups = {
-  workload_block_internet_nsg = {
+  {% if (workload_zone | trim == '1') and (workload_app_subnet_nsg | trim == '1') %}
+  workload_app_subnet_nsg = {
     rg_key = "workload_rg"
-    name   = "workload_block_internet_nsg"
+    name   = {{ workload_app_subnet_nsg_name }}
     tags   = {}
     security_rules = [
       # inbound 
@@ -524,6 +598,49 @@ network_security_groups = {
       }
     ]
   }
+  {% endif %}
+
+  {% if (workload_zone | trim == '1') and (workload_db_subnet_nsg | trim == '1') %}
+  workload_db_subnet_nsg = {
+    rg_key = "workload_rg"
+    name   = {{ workload_db_subnet_nsg_name }}
+    tags   = {}
+    security_rules = [
+      # inbound 
+      {
+        name                         = "DenyInternetInbound"
+        priority                     = 4096
+        direction                    = "Inbound"
+        access                       = "Deny"
+        protocol                     = "*"
+        source_port_range            = "*"
+        source_port_ranges           = [""]
+        destination_port_range       = "*"
+        destination_port_ranges      = [""]
+        source_address_prefix        = "Internet"
+        source_address_prefixes      = [""]
+        destination_address_prefix   = "VirtualNetwork"
+        destination_address_prefixes = [""]
+      },
+      # outbound
+      {
+        name                         = "DenyInternetOutbound"
+        priority                     = 4096
+        direction                    = "Outbound"
+        access                       = "Deny"
+        protocol                     = "*"
+        source_port_range            = "*"
+        source_port_ranges           = [""]
+        destination_port_range       = "*"
+        destination_port_ranges      = [""]
+        source_address_prefix        = "VirtualNetwork"
+        source_address_prefixes      = [""]
+        destination_address_prefix   = "Internet"
+        destination_address_prefixes = [""]
+      }
+    ]
+  }
+  {% endif %}
 
   # internet_ingress_sftp_subnet_nsg = {
   #   rg_key = "internet_ingress_egress_rg"

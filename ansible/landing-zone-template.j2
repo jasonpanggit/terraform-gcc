@@ -1067,21 +1067,25 @@ network_security_group_associations = {
 
 # Firewall public ips
 firewall_public_ips = {
-  # # internet ingress firewall public ip
-  # internet_ingress_firewall_public_ip = {
-  #   rg_key            = "internet_ingress_rg"
-  #   name              = "internet_ingress_firewall_ip"
-  #   allocation_method = "Static"
-  #   sku               = "Standard"
-  # }
-
-  # # internet egress firewall public ip
-  # internet_egress_firewall_public_ip = {
-  #   rg_key            = "internet_egress_rg"
-  #   name              = "internet_egress_firewall_ip"
-  #   allocation_method = "Static"
-  #   sku               = "Standard"
-  # }
+  {% if internet_ingress_fw | trim == '1' %}
+  # internet ingress firewall public ip
+  internet_ingress_firewall_public_ip = {
+    rg_key            = "internet_ingress_rg"
+    name              = {{ internet_ingress_fw_public_ip_name }}
+    allocation_method = {{ internet_ingress_fw_public_ip_allocation_method }}
+    sku               = {{ internet_ingress_fw_public_ip_sku }}
+  }
+  {% endif %}
+  
+  {% if internet_egress_fw | trim == '1' %}
+  # internet egress firewall public ip
+  internet_egress_firewall_public_ip = {
+    rg_key            = "internet_egress_rg"
+    name              = {{ internet_egress_fw_public_ip_name }}
+    allocation_method = {{ internet_egress_fw_public_ip_allocation_method }}
+    sku               = {{ internet_egress_fw_public_ip_sku }}
+  }
+  {% endif %}
 
   # # intranet ingress firewall public ip
   # intranet_ingress_firewall_public_ip = {

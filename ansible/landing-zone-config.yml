@@ -16,6 +16,7 @@ internet_ingress_vnet_cidr: ["100.0.0.0/24"]
 # internet ingress firewall (Non-GEN)
 internet_ingress_fw: 0
 internet_ingress_fw_public_ip_name: "internet-ingress-fw-pip"
+internet_ingress_fw_public_ip_allocation_method: "Static"
 internet_ingress_fw_public_ip_sku: "Standard"
 internet_ingress_fw_sku: "AZFW_VNet"
 internet_ingress_fw_name: "internet-ingress-fw"
@@ -50,6 +51,7 @@ internet_egress_vnet_cidr: ["100.0.2.0/24"]
 # intranet egress firewall (GEN)
 intranet_egress_fw: 0
 intranet_egress_fw_public_ip_name: "intranet-ingress-fw-pip"
+internet_egress_fw_public_ip_allocation_method: "Static"
 intranet_egress_fw_public_ip_sku: "Standard"
 intranet_egress_fw_sku: "AZFW_VNet"
 intranet_egress_fw_name: "intranet-egress-fw"

@@ -106,7 +106,7 @@ module "route_table" {
   linux_vms = module.vm.scaffold_linux_vms
 
   # Route tables
-  route_tables = var.route_tables
+  route_tables              = var.route_tables
   route_tables_associations = var.route_tables_associations
 }
 

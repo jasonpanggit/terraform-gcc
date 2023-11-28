@@ -9,7 +9,7 @@ client_secret: enter-your-client-secret-here
 ################################################################# 
 
 random_string_length: 4
-location: southeastasia
+location: "Southeast Asia"
 
 # internet ingress zone (Non-GEN)
 internet_ingress_zone: 1
@@ -33,8 +33,31 @@ internet_ingress_fw_ip_config_name: "internet-ingress-fw-ip-config"
 internet_ingress_appgw: 1
 internet_ingress_appgw_subnet_name: "appgw-subnet"
 internet_ingress_appgw_subnet_cidr: ["100.0.0.64/27"] # min. is /29 (8 IPs)
-internet_ingress_appgw_sku: "Standard_v2_WAF" # recommended subnet size is /24 for WAF
+internet_ingress_appgw_public_ip_name: "internet-ingress-appgw-pip"
+internet_ingress_appgw_public_ip_allocation_method: "Static"
+internet_ingress_appgw_public_ip_sku: "Standard"
 internet_ingress_appgw_name: "internet-ingress-appgw"
+internet_ingress_appgw_sku_name: "WAF_v2" # recommended subnet size is /24 for WAF
+internet_ingress_appgw_sku_tier: "WAF_v2"
+internet_ingress_appgw_sku_capacity: "1"
+internet_ingress_appgw_gw_ip_config_name: "internet-ingress-appgw-gw-ip-config"
+internet_ingress_appgw_frontend_port_name: "internet-ingress-appgw-frontend-port"
+internet_ingress_appgw_frontend_port: 80
+internet_ingress_appgw_frontend_public_ip_config_name: "internet-ingress-appgw-frontend-public-ip-config"
+internet_ingress_appgw_frontend_private_ip_config_name: "internet-ingress-appgw-frontend-private-ip-config"
+internet_ingress_appgw_frontend_private_ip_config_private_ip_address: "100.0.0.68" # hardcoded - need to change if subnet cidr changes
+internet_ingress_appgw_backend_address_pool_name: "internet-ingress-appgw-backend-address-pool"
+internet_ingress_appgw_backend_http_settings_name: "internet-ingress-appgw-backend-http-settings"
+internet_ingress_appgw_backend_http_settings_cookie_based_affinity: "Disabled"
+internet_ingress_appgw_backend_http_settings_path: "/"
+internet_ingress_appgw_backend_http_settings_port: 80
+internet_ingress_appgw_backend_http_settings_protocol: "Http"
+internet_ingress_appgw_backend_http_settings_request_timeout: 30
+internet_ingress_appgw_http_listener_name: "internet-ingress-appgw-http-listener"
+internet_ingress_appgw_http_listener_protocol: "Http"
+internet_ingress_appgw_request_routing_rule_name: "internet-ingress-appgw-request-routing-rule"
+internet_ingress_appgw_request_routing_rule_type: "Basic"
+internet_ingress_appgw_request_routing_rule_priority: 1
 
 # internet ingress api management (Non-GEN)
 internet_ingress_apim: 1
@@ -100,8 +123,31 @@ intranet_ingress_fw_sku_tier: "Standard"
 intranet_ingress_appgw: 0
 intranet_ingress_appgw_subnet_name: "appgw-subnet"
 intranet_ingress_appgw_subnet_cidr: ["10.0.0.64/27"]
-intranet_ingress_appgw_sku: "Standard_v2_WAF"
+intranet_ingress_appgw_public_ip_name: "intranet-ingress-appgw-pip"
+intranet_ingress_appgw_public_ip_allocation_method: "Static"
+intranet_ingress_appgw_public_ip_sku: "Standard"
 intranet_ingress_appgw_name: "intranet-ingress-appgw"
+intranet_ingress_appgw_sku_name: "WAF_v2" # recommended subnet size is /24 for WAF
+intranet_ingress_appgw_sku_tier: "WAF_v2"
+intranet_ingress_appgw_sku_capacity: "1"
+intranet_ingress_appgw_gw_ip_config_name: "intranet-ingress-appgw-gw-ip-config"
+intranet_ingress_appgw_frontend_port_name: "intranet-ingress-appgw-frontend-port"
+intranet_ingress_appgw_frontend_port: 80
+intranet_ingress_appgw_frontend_public_ip_config_name: "intranet-ingress-appgw-frontend-public-ip-config"
+intranet_ingress_appgw_frontend_private_ip_config_name: "intranet-ingress-appgw-frontend-private-ip-config"
+intranet_ingress_appgw_frontend_private_ip_config_private_ip_address: "10.0.0.68" # hardcoded - need to change if subnet cidr changes
+intranet_ingress_appgw_backend_address_pool_name: "intranet-ingress-appgw-backend-address-pool"
+intranet_ingress_appgw_backend_http_settings_name: "intranet-ingress-appgw-backend-http-settings"
+intranet_ingress_appgw_backend_http_settings_cookie_based_affinity: "Disabled"
+intranet_ingress_appgw_backend_http_settings_path: "/"
+intranet_ingress_appgw_backend_http_settings_port: 80
+intranet_ingress_appgw_backend_http_settings_protocol: "Http"
+intranet_ingress_appgw_backend_http_settings_request_timeout: 30
+intranet_ingress_appgw_http_listener_name: "intranet-ingress-appgw-http-listener"
+intranet_ingress_appgw_http_listener_protocol: "Http"
+intranet_ingress_appgw_request_routing_rule_name: "intranet-ingress-appgw-request-routing-rule"
+intranet_ingress_appgw_request_routing_rule_type: "Basic"
+intranet_ingress_appgw_request_routing_rule_priority: 1
 
 # intranet ingress api management (GEN)
 intranet_ingress_apim: 0

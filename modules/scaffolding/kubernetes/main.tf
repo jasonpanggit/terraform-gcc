@@ -8,7 +8,7 @@
 # AKS clusters
 resource "azurerm_kubernetes_cluster" "aks_clusters" {
   for_each            = var.aks_clusters
-  name                = format("%s_%s", each.value.name, var.random_string)
+  name                = format("%s-%s", each.value.name, var.random_string)
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
   # kubernetes_version      = each.value.kubernetes_version

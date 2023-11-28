@@ -2069,12 +2069,30 @@ private_dns_zones = {
 }
 
 private_dns_zone_vnet_links = {
+  {% if (privatelink_blob_core_windows_net_dns_zone | trim == '1') and (blob_core_windows_net_dns_zone_workload_vnet_link | trim == '1') %}
+  blob_core_windows_net_dns_zone_workload_vnet_link = {
+    rg_key               = "mgmt_rg"
+    private_dns_zone_key = "privatelink_blob_core_windows_net_zone"
+    vnet_key             = "workload_vnet"
+    name                 = "blob-core-windows-net-dns-zone-workload-vnet-link"
+  }
+  {% endif %}
+
   {% if (privatelink_blob_core_windows_net_dns_zone | trim == '1') and (blob_core_windows_net_dns_zone_dns_forwarding_vnet_link | trim == '1') %}
   blob_core_windows_net_dns_zone_dns_forwarding_vnet_link = {
     rg_key               = "mgmt_rg"
     private_dns_zone_key = "privatelink_blob_core_windows_net_zone"
     vnet_key             = "dns_forwarding_vnet"
-    name                 = "blob_core_windows_net_dns_zone_dns_forwarding_vnet_link"
+    name                 = "blob-core-windows-net-dns-zone-dns-forwarding-vnet-link"
+  }
+  {% endif %}
+
+  {% if (azure_api_net_dns_zone | trim == '1') and (azure_api_net_dns_zone_workload_vnet_link | trim == '1') %}
+  azure_api_net_dns_zone_workload_vnet_link = {
+    rg_key               = "mgmt_rg"
+    private_dns_zone_key = "azure_api_net_zone"
+    vnet_key             = "workload_vnet"
+    name                 = "azure-api-net-dns-zone-workload-vnet-link"
   }
   {% endif %}
 }

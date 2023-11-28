@@ -1,11 +1,22 @@
 ##################################################################################################################
-# This is the TF VARS file for setting up basic intranet zone with the following
-# - internet ingress and egress (optional) vnet
-# - intranet ingress and egress (optional) vnet
+# This is the TF VARS file for setting up a landing zone with the following
+# - internet ingress and egress vnet
+# -- firewall, app gateway, apim, sftp subnets
+# - intranet ingress and egress  vnet
+# -- firewall, app gateway, apim, sftp subnets
 # - workload vnet
+# -- app, db subnets
 # - management vnet 
+# -- bastion, adds, patch subnets
 # - devops vnet
-# - dns forwarding vnet 
+# -- runner subnet
+# - dns forwarding vnet
+# -- private dns resolver inbound and outbound subnets 
+#
+# TODO:
+# 1. App Service, ASE, AKS deployment to app subnet
+# 2. Azure SQL, Azure SQL Managed Instance deployment to db subnet
+# 3. Multi-AZ deployment
 ##################################################################################################################
 
 subscription_id = "{{ subscription_id }}"
@@ -192,6 +203,17 @@ vnet_peers = {
     allow_gateway_transit        = false
     use_remote_gateways          = false
   }
+  # workload and internet ingress 
+  workload_internet_ingress_vnet_peer = {
+    rg_key                       = "workload_rg"
+    vnet_key                     = "workload_vnet"
+    remote_vnet_key              = "internet_ingress_vnet"
+    name                         = "workkload_internet_ingress_vnet_peering"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
+  }
   {% endif %}
 
   {% if (internet_egress_zone | trim == '1') and (workload_zone | trim == '1') %}
@@ -201,6 +223,17 @@ vnet_peers = {
     vnet_key                     = "internet_egress_vnet"
     remote_vnet_key              = "workload_vnet"
     name                         = "internet_egress_workload_vnet_peering"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
+  }
+  # workload and internet egress  
+  workload_internet_egress_vnet_peer = {
+    rg_key                       = "workload_rg"
+    vnet_key                     = "workload_vnet"
+    remote_vnet_key              = "internet_egress_vnet"
+    name                         = "workload_internet_egress_vnet_peering"
     allow_virtual_network_access = true
     allow_forwarded_traffic      = true
     allow_gateway_transit        = false
@@ -220,6 +253,17 @@ vnet_peers = {
     allow_gateway_transit        = false
     use_remote_gateways          = false
   }
+  # workload and intranet ingress
+  workload_intranet_ingress_vnet_peer = {
+    rg_key                       = "workload_rg"
+    vnet_key                     = "workload_vnet"
+    remote_vnet_key              = "intranet_ingress_vnet"
+    name                         = "workload_intranet_ingress_vnet_peering"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
+  }
   {% endif %}
 
   {% if (intranet_egress_zone | trim == '1') and (workload_zone | trim == '1') %}
@@ -229,6 +273,17 @@ vnet_peers = {
     vnet_key                     = "intranet_egress_vnet"
     remote_vnet_key              = "workload_vnet"
     name                         = "intranet_egress_workload_vnet_peering"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
+  }
+  # workload and intranet egress 
+  workload_intranet_egress_vnet_peer = {
+    rg_key                       = "workload_rg"
+    vnet_key                     = "workload_vnet"
+    remote_vnet_key              = "intranet_egress_vnet"
+    name                         = "workload_intranet_egress_vnet_peering"
     allow_virtual_network_access = true
     allow_forwarded_traffic      = true
     allow_gateway_transit        = false
@@ -248,6 +303,17 @@ vnet_peers = {
     allow_gateway_transit        = false
     use_remote_gateways          = false
   }
+  # internet egress and mgmt 
+  internet_egress_mgmt_vnet_peer = {
+    rg_key                       = "internet_egress_rg"
+    vnet_key                     = "internet_egress_vnet"
+    remote_vnet_key              = "mgmt_vnet"
+    name                         = "internet_egress_mgmt_vnet_peering"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
+  }
   {% elif (internet_egress_zone | trim == '0') and (mgmt_zone | trim == '1') %}
   # mgmt and internet ingress 
   mgmt_internet_ingress_vnet_peer = {
@@ -255,6 +321,17 @@ vnet_peers = {
     vnet_key                     = "mgmt_vnet"
     remote_vnet_key              = "internet_ingress_vnet"
     name                         = "mgmt_internet_ingress_vnet_peering"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
+  }
+  # internet ingress and mgmt 
+  internet_ingress_mgmt_vnet_peer = {
+    rg_key                       = "internet_ingress_rg"
+    vnet_key                     = "internet_ingress_vnet"
+    remote_vnet_key              = "mgmt_vnet"
+    name                         = "internet_ingress_mgmt_vnet_peering"
     allow_virtual_network_access = true
     allow_forwarded_traffic      = true
     allow_gateway_transit        = false
@@ -274,6 +351,17 @@ vnet_peers = {
     allow_gateway_transit        = false
     use_remote_gateways          = false
   }
+  # workload and mgmt 
+  workload_mgmt_vnet_peer = {
+    rg_key                       = "workload_rg"
+    vnet_key                     = "workload_vnet"
+    remote_vnet_key              = "mgmt_vnet"
+    name                         = "workload_mgmt_vnet_peering"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
+  }
   {% endif %}
 
   {% if (devops_zone | trim == '1') and (internet_egress_zone | trim == '1') %}
@@ -283,6 +371,17 @@ vnet_peers = {
     vnet_key                     = "devops_vnet"
     remote_vnet_key              = "internet_egress_vnet"
     name                         = "devops_internet_egress_vnet_peering"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
+  }
+  # internet egress and devops 
+  internet_egress_devops_vnet_peer = {
+    rg_key                       = "internet_egress_rg"
+    vnet_key                     = "internet_egress_vnet"
+    remote_vnet_key              = "devops_vnet"
+    name                         = "internet_egress_devops_vnet_peering"
     allow_virtual_network_access = true
     allow_forwarded_traffic      = true
     allow_gateway_transit        = false
@@ -300,6 +399,17 @@ vnet_peers = {
     allow_gateway_transit        = false
     use_remote_gateways          = false
   }
+  # internet ingress and devops 
+  internet_ingress_devops_vnet_peer = {
+    rg_key                       = "internet_ingress_rg"
+    vnet_key                     = "internet_ingress_vnet"
+    remote_vnet_key              = "devops_vnet"
+    name                         = "internet_ingress_devops_vnet_peering"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
+  }
   {% endif %}
 
   {% if (devops_zone | trim == '1') and (workload_zone | trim == '1') %}
@@ -309,6 +419,17 @@ vnet_peers = {
     vnet_key                     = "devops_vnet"
     remote_vnet_key              = "workload_vnet"
     name                         = "devops_workload_vnet_peering"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
+  }
+  # workload and devops
+  workload_devops_vnet_peer = {
+    rg_key                       = "workload_rg"
+    vnet_key                     = "workload_vnet"
+    remote_vnet_key              = "devops_vnet"
+    name                         = "workload_devops_vnet_peering"
     allow_virtual_network_access = true
     allow_forwarded_traffic      = true
     allow_gateway_transit        = false
@@ -1744,7 +1865,67 @@ internal_apims = {
 }
 
 internal_apims_private_dns_zone_a_records = {
+  {% if internet_ingress_apim | trim == '1' %}
+  internet_apim_gateway_private_dns_zone_a_record = {
+    rg_key               = "mgmt_rg"
+    private_dns_zone_key = "azure_api_net_zone"
+    apim_key             = "internet_ingress_apim"
+    endpoint_name        = ""
+    ttl                  = 3600
+  }
+  internet_apim_developer_private_dns_zone_a_record = {
+    rg_key               = "mgmt_rg"
+    private_dns_zone_key = "azure_api_net_zone"
+    apim_key             = "internet_ingress_apim"
+    endpoint_name        = ".developer"
+    ttl                  = 3600
+  }
+  internet_apim_management_private_dns_zone_a_record = {
+    rg_key               = "mgmt_rg"
+    private_dns_zone_key = "azure_api_net_zone"
+    apim_key             = "internet_ingress_apim"
+    endpoint_name        = ".management"
+    ttl                  = 3600
+  }
+  internet_apim_scm_private_dns_zone_a_record = {
+    rg_key               = "mgmt_rg"
+    private_dns_zone_key = "azure_api_net_zone"
+    apim_key             = "internet_ingress_apim"
+    endpoint_name        = ".scm"
+    ttl                  = 3600
+  }
+  {% endif %}  
 
+  {% if intranet_ingress_apim | trim == '1' %}
+  intranet_apim_gateway_private_dns_zone_a_record = {
+    rg_key               = "mgmt_rg"
+    private_dns_zone_key = "azure_api_net_zone"
+    apim_key             = "intranet_ingress_apim"
+    endpoint_name        = ""
+    ttl                  = 3600
+  }
+  intranet_apim_developer_private_dns_zone_a_record = {
+    rg_key               = "mgmt_rg"
+    private_dns_zone_key = "azure_api_net_zone"
+    apim_key             = "intranet_ingress_apim"
+    endpoint_name        = ".developer"
+    ttl                  = 3600
+  }
+  intranet_apim_management_private_dns_zone_a_record = {
+    rg_key               = "mgmt_rg"
+    private_dns_zone_key = "azure_api_net_zone"
+    apim_key             = "intranet_ingress_apim"
+    endpoint_name        = ".management"
+    ttl                  = 3600
+  }
+  intranet_apim_scm_private_dns_zone_a_record = {
+    rg_key               = "mgmt_rg"
+    private_dns_zone_key = "azure_api_net_zone"
+    apim_key             = "intranet_ingress_apim"
+    endpoint_name        = ".scm"
+    ttl                  = 3600
+  }
+  {% endif %}
 }
 
 ##########################################

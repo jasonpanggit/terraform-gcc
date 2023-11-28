@@ -1,7 +1,8 @@
 ##################################################################################################################
 # This is the TF VARS file for setting up basic intranet zone with the following
-# - internet ingress and egress vnet
-# - intranet ingress and egress vnet
+# - internet ingress and egress (optional) vnet
+# - intranet ingress and egress (optional) vnet
+# - workload vnet
 # - management vnet 
 # - devops vnet
 # - dns forwarding vnet 
@@ -23,14 +24,14 @@ location             = "{{ location }}"
 resource_groups = {
   {% if internet_ingress_zone | trim == '1' %}
   internet_ingress_rg = {
-    name = "{{ internet_ingress_resource_group_name | safe }}"
+    name = "{{ internet_ingress_resource_group_name }}"
   }
   {% endif %}
 
   {% if internet_egress_zone | trim == '1' %}
   # optional
   internet_egress_rg = {
-    name = "{{ internet_egress_resource_group_name | safe}}"
+    name = "{{ internet_egress_resource_group_name }}"
   }
   {% endif %}
 
@@ -84,7 +85,7 @@ virtual_networks = {
   internet_ingress_vnet = {
     rg_key = "internet_ingress_rg"
     name   = "{{ internet_ingress_vnet_name }}"
-    address_space = ["{{ internet_ingress_vnet_cidr }}"]
+    address_space = {{ internet_ingress_vnet_cidr | safe | replace("'", '"') }}
     tags          = {
       "Compartment" = "Public (Non-GEN)"
     }
@@ -96,7 +97,7 @@ virtual_networks = {
   internet_egress_vnet = {
     rg_key = "internet_egress_rg"
     name   = "{{ internet_egress_vnet_name }}"
-    address_space = ["{{ internet_egress_vnet_cidr }}"]
+    address_space = {{ internet_egress_vnet_cidr | safe | replace("'", '"') }}
     tags          = {
       "Compartment" = "Public (Non-GEN)"
     }
@@ -108,7 +109,7 @@ virtual_networks = {
   intranet_ingress_vnet = {
     rg_key = "intranet_ingress_rg"
     name   = "{{ intranet_ingress_vnet_name }}"
-    address_space = ["{{ intranet_ingress_vnet_cidr }}"]
+    address_space = {{ intranet_ingress_vnet_cidr | safe | replace("'", '"') }}
     tags          = {
       "Compartment" = "Public (GEN)"
     }
@@ -120,7 +121,7 @@ virtual_networks = {
   intranet_egress_vnet = {
     rg_key = "intranet_egress_rg"
     name   = "{{ intranet_egress_vnet_name }}"
-    address_space = ["{{ intranet_egress_vnet_cidr }}"]
+    address_space = {{ intranet_egress_vnet_cidr | safe | replace("'", '"') }}
     tags          = {
       "Compartment" = "Public (GEN)"
     }
@@ -132,7 +133,7 @@ virtual_networks = {
   workload_vnet = {
     rg_key = "workload_rg"
     name   = "{{ workload_vnet_name }}"
-    address_space = ["{{ workload_vnet_cidr }}"]
+    address_space = {{ workload_vnet_cidr | safe | replace("'", '"') }}
     tags          = {
       "Compartment" = "Private (Non-GEN)"
     }
@@ -144,7 +145,7 @@ virtual_networks = {
   mgmt_vnet = {
     rg_key = "mgmt_rg"
     name   = "{{ mgmt_vnet_name }}"
-    address_space = ["{{ mgmt_vnet_cidr }}"]
+    address_space = {{ mgmt_vnet_cidr | safe | replace("'", '"') }}
     tags          = {
       "Compartment" = "Private (GEN)"
     }
@@ -156,7 +157,7 @@ virtual_networks = {
   devops_vnet = {
     rg_key = "devops_rg"
     name   = "{{ devops_vnet_name }}"
-    address_space = ["{{ devops_vnet_cidr }}"]
+    address_space = {{ devops_vnet_cidr | safe | replace("'", '"') }}
     tags          = {
       "Compartment" = "Private (Non-GEN)" # can be Agency managed as well for SHIP-HATS as need to provision VPN Gateway for S2S
     }
@@ -168,7 +169,7 @@ virtual_networks = {
   dns_forwarding_vnet = {
     rg_key = "dns_forwarding_rg"
     name   = "{{ dns_forwarding_vnet_name }}"
-    address_space = ["{{ dns_forwarding_vnet_cidr }}"]
+    address_space = {{ dns_forwarding_vnet_cidr | safe | replace("'", '"') }}
     tags          = {
       "Compartment" = "Public (GEN)" 
     }
@@ -186,10 +187,10 @@ vnet_peers = {
     vnet_key                     = "internet_ingress_vnet"
     remote_vnet_key              = "workload_vnet"
     name                         = "internet_ingress_workload_vnet_peering"
-    allow_virtual_network_access = "true"
-    allow_forwarded_traffic      = "true"
-    allow_gateway_transit        = "false"
-    use_remote_gateways          = "false"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
   }
   {% endif %}
 
@@ -200,10 +201,10 @@ vnet_peers = {
     vnet_key                     = "internet_egress_vnet"
     remote_vnet_key              = "workload_vnet"
     name                         = "internet_egress_workload_vnet_peering"
-    allow_virtual_network_access = "true"
-    allow_forwarded_traffic      = "true"
-    allow_gateway_transit        = "false"
-    use_remote_gateways          = "false"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
   }
   {% endif %}
 
@@ -214,10 +215,10 @@ vnet_peers = {
     vnet_key                     = "intranet_ingress_vnet"
     remote_vnet_key              = "workload_vnet"
     name                         = "intranet_ingress_workload_vnet_peering"
-    allow_virtual_network_access = "true"
-    allow_forwarded_traffic      = "true"
-    allow_gateway_transit        = "false"
-    use_remote_gateways          = "false"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
   }
   {% endif %}
 
@@ -228,10 +229,10 @@ vnet_peers = {
     vnet_key                     = "intranet_egress_vnet"
     remote_vnet_key              = "workload_vnet"
     name                         = "intranet_egress_workload_vnet_peering"
-    allow_virtual_network_access = "true"
-    allow_forwarded_traffic      = "true"
-    allow_gateway_transit        = "false"
-    use_remote_gateways          = "false"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
   }
   {% endif %}
 
@@ -242,10 +243,10 @@ vnet_peers = {
     vnet_key                     = "mgmt_vnet"
     remote_vnet_key              = "internet_egress_vnet"
     name                         = "mgmt_internet_egress_vnet_peering"
-    allow_virtual_network_access = "true"
-    allow_forwarded_traffic      = "true"
-    allow_gateway_transit        = "false"
-    use_remote_gateways          = "false"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
   }
   {% elif (internet_egress_zone | trim == '0') and (mgmt_zone | trim == '1') %}
   # mgmt and internet ingress 
@@ -254,10 +255,10 @@ vnet_peers = {
     vnet_key                     = "mgmt_vnet"
     remote_vnet_key              = "internet_ingress_vnet"
     name                         = "mgmt_internet_ingress_vnet_peering"
-    allow_virtual_network_access = "true"
-    allow_forwarded_traffic      = "true"
-    allow_gateway_transit        = "false"
-    use_remote_gateways          = "false"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
   }
   {% endif %}
 
@@ -268,10 +269,10 @@ vnet_peers = {
     vnet_key                     = "mgmt_vnet"
     remote_vnet_key              = "workload_vnet"
     name                         = "mgmt_workload_vnet_peering"
-    allow_virtual_network_access = "true"
-    allow_forwarded_traffic      = "true"
-    allow_gateway_transit        = "false"
-    use_remote_gateways          = "false"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
   }
   {% endif %}
 
@@ -282,10 +283,10 @@ vnet_peers = {
     vnet_key                     = "devops_vnet"
     remote_vnet_key              = "internet_egress_vnet"
     name                         = "devops_internet_egress_vnet_peering"
-    allow_virtual_network_access = "true"
-    allow_forwarded_traffic      = "true"
-    allow_gateway_transit        = "false"
-    use_remote_gateways          = "false"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
   }
   {% elif (devops_zone | trim == '1') and (internet_egress_zone | trim == '0') %}
   # devops and internet ingress 
@@ -294,10 +295,10 @@ vnet_peers = {
     vnet_key                     = "devops_vnet"
     remote_vnet_key              = "internet_ingress_vnet"
     name                         = "devops_internet_ingress_vnet_peering"
-    allow_virtual_network_access = "true"
-    allow_forwarded_traffic      = "true"
-    allow_gateway_transit        = "false"
-    use_remote_gateways          = "false"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
   }
   {% endif %}
 
@@ -308,10 +309,10 @@ vnet_peers = {
     vnet_key                     = "devops_vnet"
     remote_vnet_key              = "workload_vnet"
     name                         = "devops_workload_vnet_peering"
-    allow_virtual_network_access = "true"
-    allow_forwarded_traffic      = "true"
-    allow_gateway_transit        = "false"
-    use_remote_gateways          = "false"
+    allow_virtual_network_access = true
+    allow_forwarded_traffic      = true
+    allow_gateway_transit        = false
+    use_remote_gateways          = false
   }
   {% endif %}
 }
@@ -327,7 +328,7 @@ subnets = {
     rg_key           = "internet_ingress_rg"
     vnet_key         = "internet_ingress_vnet"
     name             = "{{ internet_ingress_fw_subnet_name }}"
-    address_prefixes = ["{{ internet_ingress_fw_subnet_cidr }}"]
+    address_prefixes = {{ internet_ingress_fw_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -337,7 +338,7 @@ subnets = {
     rg_key           = "internet_ingress_rg"
     vnet_key         = "internet_ingress_vnet"
     name             = "{{ internet_ingress_appgw_subnet_name }}"
-    address_prefixes = ["{{ internet_ingress_appgw_subnet_cidr }}"]
+    address_prefixes = {{ internet_ingress_appgw_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -347,7 +348,7 @@ subnets = {
     rg_key           = "internet_ingress_rg"
     vnet_key         = "internet_ingress_vnet"
     name             = "{{ internet_ingress_apim_subnet_name }}"
-    address_prefixes = ["{{ internet_ingress_apim_subnet_cidr }}"]
+    address_prefixes = {{ internet_ingress_apim_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -357,7 +358,7 @@ subnets = {
     rg_key           = "internet_ingress_rg"
     vnet_key         = "internet_ingress_vnet"
     name             = "{{ internet_ingress_sftp_subnet_name }}"
-    address_prefixes = ["{{ internet_ingress_sftp_subnet_cidr }}"]
+    address_prefixes = {{ internet_ingress_sftp_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -367,7 +368,7 @@ subnets = {
     rg_key           = "internet_egress_rg"
     vnet_key         = "internet_egress_vnet"
     name             = "{{ internet_egress_fw_subnet_name }}"
-    address_prefixes = ["{{ internet_egress_fw_subnet_cidr }}"]
+    address_prefixes = {{ internet_egress_fw_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -377,7 +378,7 @@ subnets = {
     rg_key           = "intranet_ingress_rg"
     vnet_key         = "intranet_ingress_vnet"
     name             = "{{ intranet_ingress_fw_subnet_name }}"
-    address_prefixes = ["{{ intranet_ingress_fw_subnet_cidr }}"]
+    address_prefixes = {{ intranet_ingress_fw_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -387,7 +388,7 @@ subnets = {
     rg_key           = "intranet_ingress_rg"
     vnet_key         = "intranet_ingress_vnet"
     name             = "{{ intranet_ingress_appgw_subnet_name }}"
-    address_prefixes = ["{{ intranet_ingress_appgw_subnet_cidr }}"]
+    address_prefixes = {{ intranet_ingress_appgw_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -397,7 +398,7 @@ subnets = {
     rg_key           = "intranet_ingress_rg"
     vnet_key         = "intranet_ingress_vnet"
     name             = "{{ intranet_ingress_apim_subnet_name }}"
-    address_prefixes = ["{{ intranet_ingress_apim_subnet_cidr }}"]
+    address_prefixes = {{ intranet_ingress_apim_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -407,7 +408,7 @@ subnets = {
     rg_key           = "intranet_ingress_rg"
     vnet_key         = "intranet_ingress_vnet"
     name             = "{{ intranet_ingress_sftp_subnet_name }}"
-    address_prefixes = ["{{ intranet_ingress_sftp_subnet_cidr }}"]
+    address_prefixes = {{ intranet_ingress_sftp_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -417,7 +418,7 @@ subnets = {
     rg_key           = "intranet_egress_rg"
     vnet_key         = "intranet_egress_vnet"
     name             = "{{ intranet_egress_fw_subnet_name }}"
-    address_prefixes = ["{{ intranet_egress_fw_subnet_cidr }}"]
+    address_prefixes = {{ intranet_egress_fw_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -427,7 +428,7 @@ subnets = {
     rg_key           = "workload_rg"
     vnet_key         = "workload_vnet"
     name             = "{{ workload_app_subnet_name }}"
-    address_prefixes = ["{{ workload_app_subnet_cidr }}"]
+    address_prefixes = {{ workload_app_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -437,7 +438,7 @@ subnets = {
     rg_key           = "workload_rg"
     vnet_key         = "workload_vnet"
     name             = "{{ workload_db_subnet_name }}"
-    address_prefixes = ["{{ workload_db_subnet_cidr }}"]
+    address_prefixes = {{ workload_db_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -447,7 +448,7 @@ subnets = {
     rg_key           = "mgmt_rg"
     vnet_key         = "mgmt_vnet"
     name             = "{{ mgmt_bastion_subnet_name }}"
-    address_prefixes = ["{{ mgmt_bastion_subnet_cidr }}"]
+    address_prefixes = {{ mgmt_bastion_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -457,7 +458,7 @@ subnets = {
     rg_key           = "mgmt_rg"
     vnet_key         = "mgmt_vnet"
     name             = "{{ mgmt_adds_subnet_name }}"
-    address_prefixes = ["{{ mgmt_adds_subnet_cidr }}"]
+    address_prefixes = {{ mgmt_adds_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -467,7 +468,7 @@ subnets = {
     rg_key           = "mgmt_rg"
     vnet_key         = "mgmt_vnet"
     name             = "{{ mgmt_patch_subnet_name }}"
-    address_prefixes = ["{{ mgmt_patch_subnet_cidr }}"]
+    address_prefixes = {{ mgmt_patch_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -477,7 +478,7 @@ subnets = {
     rg_key           = "devops_rg"
     vnet_key         = "devops_vnet"
     name             = "{{ devops_runner_subnet_name }}"
-    address_prefixes = ["{{ devops_runner_subnet_cidr }}"]
+    address_prefixes = {{ devops_runner_subnet_cidr | safe | replace("'", '"') }}
   }
   {% endif %}
 
@@ -487,7 +488,14 @@ subnets = {
     rg_key           = "dns_forwarding_rg"
     vnet_key         = "dns_forwarding_vnet"
     name             = "{{ dns_forwarding_private_dns_resolver_inbound_subnet_name }}"
-    address_prefixes = ["{{ dns_forwarding_private_dns_resolver_inbound_subnet_cidr }}"]
+    address_prefixes = {{ dns_forwarding_private_dns_resolver_inbound_subnet_cidr | safe | replace("'", '"') }}
+
+    delegation = {
+      dnsResolvers = {
+        service_name    = "Microsoft.Network/dnsResolvers"
+        service_actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+      }
+    }
   }
   
   # private dns resolver outbound subnet
@@ -495,7 +503,14 @@ subnets = {
     rg_key           = "dns_forwarding_rg"
     vnet_key         = "dns_forwarding_vnet"
     name             = "{{ dns_forwarding_private_dns_resolver_outbound_subnet_name }}"
-    address_prefixes = ["{{ dns_forwarding_private_dns_resolver_outbound_subnet_cidr }}"]
+    address_prefixes = {{ dns_forwarding_private_dns_resolver_outbound_subnet_cidr | safe | replace("'", '"') }}
+
+    delegation = {
+      dnsResolvers = {
+        service_name    = "Microsoft.Network/dnsResolvers"
+        service_actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+      }
+    }
   }
   {% endif %}
 }
@@ -559,7 +574,7 @@ route_tables_associations = {
 # Network security groups
 network_security_groups = {
   {% if (internet_ingress_zone | trim == '1') and (internet_ingress_appgw_subnet_nsg | trim == '1') %}
-  internet_appgw_subnet_nsg = {
+  internet_ingress_appgw_subnet_nsg = {
     rg_key = "internet_ingress_rg"
     name   = "{{ internet_ingress_appgw_subnet_nsg_name }}"
     tags   = {}
@@ -575,10 +590,81 @@ network_security_groups = {
         source_port_ranges           = [""]
         destination_port_range       = "443"
         destination_port_ranges      = [""]
-        source_address_prefix        = "{{ internet_ingress_fw_subnet_cidr }}"
+        source_address_prefix        = ""
+        source_address_prefixes      = {{ internet_ingress_fw_subnet_cidr | safe | replace("'", '"') }}
+        destination_address_prefix   = ""
+        destination_address_prefixes = {{ internet_ingress_appgw_subnet_cidr | safe | replace("'", '"') }}
+      },
+      {
+        name                         = "AllowGatewayManagerV2Inbound"
+        priority                     = 4001
+        direction                    = "Inbound"
+        access                       = "Allow"
+        protocol                     = "Tcp"
+        source_port_range            = "*"
+        source_port_ranges           = [""]
+        destination_port_range       = ""
+        destination_port_ranges      = ["65200-65535"]
+        source_address_prefix        = "GatewayManager"
         source_address_prefixes      = [""]
-        destination_address_prefix   = "{{ internet_ingress_appgw_subnet_cidr }}"
+        destination_address_prefix   = "*"
         destination_address_prefixes = [""]
+      },
+      {
+        name                         = "AllowAzureLoadBalancerInbound"
+        priority                     = 4002
+        direction                    = "Inbound"
+        access                       = "Allow"
+        protocol                     = "*"
+        source_port_range            = "*"
+        source_port_ranges           = [""]
+        destination_port_range       = "*"
+        destination_port_ranges      = [""]
+        source_address_prefix        = "AzureLoadBalancer"
+        source_address_prefixes      = [""]
+        destination_address_prefix   = "*"
+        destination_address_prefixes = [""]
+      },
+      {
+        name                         = "DenyInternetInbound"
+        priority                     = 4096
+        direction                    = "Inbound"
+        access                       = "Deny"
+        protocol                     = "*"
+        source_port_range            = "*"
+        source_port_ranges           = [""]
+        destination_port_range       = "*"
+        destination_port_ranges      = [""]
+        source_address_prefix        = "Internet"
+        source_address_prefixes      = [""]
+        destination_address_prefix   = "VirtualNetwork"
+        destination_address_prefixes = [""]
+      }
+    ]
+  }
+  {% endif %}
+
+  {% if (intranet_ingress_zone | trim == '1') and (intranet_ingress_appgw_subnet_nsg | trim == '1') %}
+  intranet_ingress_appgw_subnet_nsg = {
+    rg_key = "intranet_ingress_rg"
+    name   = "{{ intranet_ingress_appgw_subnet_nsg_name }}"
+    tags   = {}
+    security_rules = [
+      # inbound 
+      {
+        name                         = "AllowIntranetIngressFwHttpsInbound"
+        priority                     = 4000
+        direction                    = "Inbound"
+        access                       = "Allow"
+        protocol                     = "Tcp"
+        source_port_range            = "443"
+        source_port_ranges           = [""]
+        destination_port_range       = "443"
+        destination_port_ranges      = [""]
+        source_address_prefix        = ""
+        source_address_prefixes      = {{ intranet_ingress_fw_subnet_cidr | safe | replace("'", '"') }}
+        destination_address_prefix   = ""
+        destination_address_prefixes = {{ intranet_ingress_appgw_subnet_cidr | safe | replace("'", '"') }}
       },
       {
         name                         = "AllowGatewayManagerV2Inbound"
@@ -1096,6 +1182,39 @@ network_security_groups = {
 
 # Network security group associations
 network_security_group_associations = {
+
+  {% if (internet_ingress_appgw | trim == '1') and (internet_ingress_appgw_subnet_nsg | trim == '1') %}
+  # internet ingress app gateway subnet nsg association
+  internet_ingress_appgw_subnet_nsg_assoc = {
+    nsg_key    = "internet_ingress_appgw_subnet_nsg"
+    subnet_key = "internet_ingress_appgw_subnet"
+  }
+  {% endif %}
+
+  {% if (intranet_ingress_appgw | trim == '1') and (intranet_ingress_appgw_subnet_nsg | trim == '1') %}
+  # intranet ingress app gateway subnet nsg association
+  intranet_ingress_appgw_subnet_nsg_assoc = {
+    nsg_key    = "intranet_ingress_appgw_subnet_nsg"
+    subnet_key = "intranet_ingress_appgw_subnet"
+  }
+  {% endif %}
+
+  {% if (workload_zone | trim == '1') and (workload_app_subnet_nsg | trim == '1') %}
+  # workload app subnet nsg association
+  workload_app_subnet_nsg_assoc = {
+    nsg_key    = "workload_app_subnet_nsg"
+    subnet_key = "workload_app_subnet"
+  }
+  {% endif %}
+
+  {% if (workload_zone | trim == '1') and (workload_db_subnet_nsg | trim == '1') %}
+  # workload db subnet nsg association
+  workload_db_subnet_nsg_assoc = {
+    nsg_key    = "workload_db_subnet_nsg"
+    subnet_key = "workload_db_subnet"
+  }
+  {% endif %}
+  
   # internet_ingress_egress_sftp_subnet_nsg_assoc = {
   #   nsg_key    = "internet_ingress_egress_sftp_subnet_nsg"
   #   subnet_key = "internet_ingress_egress_sftp_subnet"
@@ -1189,6 +1308,9 @@ firewalls = {
     sku_name = "{{ internet_ingress_fw_sku_name }}"
     sku_tier = "{{ internet_ingress_fw_sku_tier }}"
 
+    # enable DNS proxy by setting custom DNS to private DNS resolver inbound subnet
+    #dns_servers = []
+
     ip_configurations = [
       {
         subnet_key     = "internet_ingress_firewall_subnet"
@@ -1207,6 +1329,9 @@ firewalls = {
     name     = "{{ internet_egress_fw_name }}"
     sku_name = "{{ internet_egress_fw_sku_name }}"
     sku_tier = "{{ internet_egress_fw_sku_tier }}"
+
+    # enable DNS proxy by setting custom DNS to private DNS resolver inbound subnet
+    #dns_servers = []
 
     ip_configurations = [
       {
@@ -1227,6 +1352,9 @@ firewalls = {
     sku_name = "{{ intranet_ingress_fw_sku_name }}"
     sku_tier = "{{ intranet_ingress_fw_sku_tier }}"
 
+    # enable DNS proxy by setting custom DNS to private DNS resolver inbound subnet
+    dns_servers = []
+
     ip_configurations = [
       {
         subnet_key     = "intranet_ingress_firewall_subnet"
@@ -1246,6 +1374,9 @@ firewalls = {
     sku_name = "{{ intranet_egress_fw_sku_name }}"
     sku_tier = "{{ intranet_egress_fw_sku_tier }}"
   
+    # enable DNS proxy by setting custom DNS to private DNS resolver inbound subnet
+    dns_servers = []
+
     ip_configurations = [
       {
         subnet_key     = "intranet_egress_firewall_subnet"
@@ -1495,6 +1626,128 @@ firewall_network_rule_collections = {
 }
 
 ##########################################
+# App gateway module 
+##########################################
+
+app_gateway_public_ips = {
+  {% if internet_ingress_appgw | trim == '1' %}
+  internet_ingress_appgw_public_ip = {
+    rg_key            = "internet_ingress_rg"
+    name              = "{{ internet_ingress_appgw_public_ip_name }}"
+    allocation_method = "{{ internet_ingress_appgw_public_ip_allocation_method }}"
+    sku               = "{{ internet_ingress_appgw_public_ip_sku }}"
+  }
+  {% endif %}
+
+  {% if intranet_ingress_appgw | trim == '1' %}
+  intranet_ingress_appgw_public_ip = {
+    rg_key            = "intranet_ingress_rg"
+    name              = "{{ intranet_ingress_appgw_public_ip_name }}"
+    allocation_method = "{{ intranet_ingress_appgw_public_ip_allocation_method }}"
+    sku               = "{{ intranet_ingress_appgw_public_ip_sku }}"
+  }
+  {% endif %}
+}
+
+app_gateways = {
+  {% if internet_ingress_appgw | trim == '1' %}
+  internet_ingress_appgw = {
+    rg_key               = "internet_ingress_rg"
+    subnet_key           = "internet_ingress_appgw_subnet"
+    public_ip_key        = "internet_ingress_appgw_public_ip"
+    name                 = "{{ internet_ingress_appgw_name }}"
+    sku_name             = "{{ internet_ingress_appgw_sku_name }}"
+    sku_capacity         = "{{ internet_ingress_appgw_sku_capacity }}"
+    sku_tier             = "{{ internet_ingress_appgw_sku_tier }}"
+    gw_ip_config_name    = "{{ internet_ingress_appgw_gw_ip_config_name }}"
+    frontend_port_name        = "{{ internet_ingress_appgw_frontend_port_name }}"
+    frontend_port        = "{{ internet_ingress_appgw_frontend_port }}"
+    frontend_public_ip_config_name = "{{ internet_ingress_appgw_frontend_public_ip_config_name }}"
+    frontend_private_ip_config_name = "{{ internet_ingress_appgw_frontend_private_ip_config_name }}"
+    frontend_private_ip_config_private_ip_address = "{{ internet_ingress_appgw_frontend_private_ip_config_private_ip_address }}"
+    backend_address_pool_name = "{{ internet_ingress_appgw_backend_address_pool_name }}"
+    backend_http_settings_name = "{{ internet_ingress_appgw_backend_http_settings_name }}"
+    backend_http_settings_cookie_based_affinity = "{{ internet_ingress_appgw_backend_http_settings_cookie_based_affinity }}"
+    backend_http_settings_path = "{{ internet_ingress_appgw_backend_http_settings_path }}"
+    backend_http_settings_port = "{{ internet_ingress_appgw_backend_http_settings_port }}"
+    backend_http_settings_protocol = "{{ internet_ingress_appgw_backend_http_settings_protocol }}"
+    backend_http_settings_request_timeout = "{{ internet_ingress_appgw_backend_http_settings_request_timeout }}"
+    http_listener_name = "{{ internet_ingress_appgw_http_listener_name }}"
+    http_listener_protocol = "{{ internet_ingress_appgw_http_listener_protocol }}"  
+    request_routing_rule_name = "{{ internet_ingress_appgw_request_routing_rule_name }}"
+    request_routing_rule_type = "{{ internet_ingress_appgw_request_routing_rule_type }}"
+    request_routing_rule_priority = "{{ internet_ingress_appgw_request_routing_rule_priority }}"
+  }
+  {% endif %}
+
+  {% if intranet_ingress_appgw | trim == '1' %}
+  intranet_ingress_appgw = {
+    rg_key               = "intranet_ingress_rg"
+    subnet_key           = "intranet_ingress_appgw_subnet"
+    public_ip_key        = "intranet_ingress_appgw_public_ip"
+    name                 = "{{ intranet_ingress_appgw_name }}"
+    sku_name             = "{{ intranet_ingress_appgw_sku_name }}"
+    sku_capacity         = "{{ intranet_ingress_appgw_sku_capacity }}"
+    sku_tier             = "{{ intranet_ingress_appgw_sku_tier }}"
+    gw_ip_config_name    = "{{ intranet_ingress_appgw_gw_ip_config_name }}"
+    frontend_port_name        = "{{ intranet_ingress_appgw_frontend_port_name }}"
+    frontend_port        = "{{ intranet_ingress_appgw_frontend_port }}"
+    frontend_public_ip_config_name = "{{ intranet_ingress_appgw_frontend_public_ip_config_name }}"
+    frontend_private_ip_config_name = "{{ intranet_ingress_appgw_frontend_private_ip_config_name }}"
+    frontend_private_ip_config_private_ip_address = "{{ intranet_ingress_appgw_frontend_private_ip_config_private_ip_address }}"
+    backend_address_pool_name = "{{ intranet_ingress_appgw_backend_address_pool_name }}"
+    backend_http_settings_name = "{{ intranet_ingress_appgw_backend_http_settings_name }}"
+    backend_http_settings_cookie_based_affinity = "{{ intranet_ingress_appgw_backend_http_settings_cookie_based_affinity }}"
+    backend_http_settings_path = "{{ intranet_ingress_appgw_backend_http_settings_path }}"
+    backend_http_settings_port = "{{ intranet_ingress_appgw_backend_http_settings_port }}"
+    backend_http_settings_protocol = "{{ intranet_ingress_appgw_backend_http_settings_protocol }}"
+    backend_http_settings_request_timeout = "{{ intranet_ingress_appgw_backend_http_settings_request_timeout }}"
+    http_listener_name = "{{ intranet_ingress_appgw_http_listener_name }}"
+    http_listener_protocol = "{{ intranet_ingress_appgw_http_listener_protocol }}"  
+    request_routing_rule_name = "{{ intranet_ingress_appgw_request_routing_rule_name }}"
+    request_routing_rule_type = "{{ intranet_ingress_appgw_request_routing_rule_type }}"
+    request_routing_rule_priority = "{{ intranet_ingress_appgw_request_routing_rule_priority }}"
+  }
+  {% endif %}
+}
+
+##########################################
+# API management module
+##########################################
+
+internal_apims = {
+  {% if internet_ingress_apim | trim == '1' %}
+  internet_ingress_apim = {
+    rg_key               = "internet_ingress_rg"
+    subnet_key           = "internet_ingress_apim_subnet"
+    name                 = "{{ internet_ingress_apim_name }}" 
+    publisher_name       = "{{ internet_ingress_apim_publisher_name }}" 
+    publisher_email      = "{{ internet_ingress_apim_publisher_email }}"
+    sku_name             = "{{ internet_ingress_apim_sku_name }}"
+    sku_capacity         = "{{ internet_ingress_apim_sku_capacity }}"
+    virtual_network_type = "{{ internet_ingress_apim_virtual_network_type }}"
+  }
+  {% endif %}
+
+  {% if intranet_ingress_apim | trim == '1' %}
+  intranet_ingress_apim = {
+    rg_key               = "intranet_ingress_rg"
+    subnet_key           = "intranet_ingress_apim_subnet"
+    name                 = "{{ intranet_ingress_apim_name }}" 
+    publisher_name       = "{{ intranet_ingress_apim_publisher_name }}" 
+    publisher_email      = "{{ intranet_ingress_apim_publisher_email }}"
+    sku_name             = "{{ intranet_ingress_apim_sku_name }}"
+    sku_capacity         = "{{ internet_ingress_apim_sku_capacity }}"
+    virtual_network_type = "{{ intranet_ingress_apim_virtual_network_type }}"
+  }
+  {% endif %}
+}
+
+internal_apims_private_dns_zone_a_records = {
+
+}
+
+##########################################
 # Storage account module
 ##########################################
 
@@ -1505,9 +1758,9 @@ storage_accounts = {
     name                          = "{{ internet_ingress_sftp_storage_account_name }}"
     account_tier                  = "{{ internet_ingress_sftp_storage_account_tier }}"
     account_replication_type      = "{{ internet_ingress_sftp_storage_account_replication_type }}"
-    public_network_access_enabled = "{{ internet_ingress_sftp_storage_account_public_network_access_enabled }}"
-    is_hns_enabled                = "{{ internet_ingress_sftp_storage_account_is_hns_enabled }}"
-    sftp_enabled                  = "{{ internet_ingress_sftp_storage_account}}"
+    public_network_access_enabled = {{ internet_ingress_sftp_storage_account_public_network_access_enabled | safe }}
+    is_hns_enabled                = {{ internet_ingress_sftp_storage_account_is_hns_enabled | safe }}
+    sftp_enabled                  = {{ internet_ingress_sftp_storage_account_sftp_enabled | safe }}
     identity_type                 = "{{ internet_ingress_sftp_storage_account_identity_type }}"
   }
   {% endif %}
@@ -1518,9 +1771,9 @@ storage_accounts = {
     name                          = "{{ intranet_ingress_sftp_storage_account_name }}"
     account_tier                  = "{{ intranet_ingress_sftp_storage_account_tier }}"
     account_replication_type      = "{{ intranet_ingress_sftp_storage_account_replication_type }}"
-    public_network_access_enabled = "{{ intranet_ingress_sftp_storage_account_public_network_access_enabled }}"
-    is_hns_enabled                = "{{ intranet_ingress_sftp_storage_account_is_hns_enabled }}"
-    sftp_enabled                  = "{{ intranet_ingress_sftp_storage_account }}"
+    public_network_access_enabled = {{ intranet_ingress_sftp_storage_account_public_network_access_enabled | safe }}
+    is_hns_enabled                = {{ intranet_ingress_sftp_storage_account_is_hns_enabled | safe }}
+    sftp_enabled                  = {{ intranet_ingress_sftp_storage_account_sftp_enabled | safe }}
     identity_type                 = "{{ intranet_ingress_sftp_storage_account_identity_type }}"
   }
   {% endif %}
@@ -1535,9 +1788,9 @@ storage_account_private_endpoints = {
     private_service_connections = [
       {
         storage_account_key  = "internet_ingress_sftp_storage_account"
-        name                 = "{{ internet_ingress_sftp_storage_account_private_endpoint_psc_name }}"
-        is_manual_connection = {{ internet_ingress_sftp_storage_account_private_endpoint_psc_is_manual_connection }}
-        subresource_names    = ["{{ internet_ingress_sftp_storage_account_private_endpoint_psc_subresource_names }}"]
+        name                 = "{{ internet_ingress_sftp_storage_account_private_endpoint_private_service_connection_name }}"
+        is_manual_connection = {{ internet_ingress_sftp_storage_account_private_endpoint_private_service_connection_is_manual_connection | safe }}
+        subresource_names    = {{ internet_ingress_sftp_storage_account_private_endpoint_private_service_connection_subresource_names | safe | replace("'", '"') }}
       }
     ]
   }
@@ -1551,9 +1804,9 @@ storage_account_private_endpoints = {
     private_service_connections = [
       {
         storage_account_key  = "intranet_ingress_sftp_storage_account"
-        name                 = "{{ intranet_ingress_sftp_storage_account_private_endpoint_psc_name }}"
-        is_manual_connection = {{ intranet_ingress_sftp_storage_account_private_endpoint_psc_is_manual_connection }}
-        subresource_names    = ["{{ intranet_ingress_sftp_storage_account_private_endpoint_psc_subresource_names }}"]
+        name                 = "{{ intranet_ingress_sftp_storage_account_private_endpoint_private_service_connection_name }}"
+        is_manual_connection = {{ intranet_ingress_sftp_storage_account_private_endpoint_private_service_connection_is_manual_connection | safe }}
+        subresource_names    = {{ intranet_ingress_sftp_storage_account_private_endpoint_private_service_connection_subresource_names | safe | replace("'", '"') }}
       }
     ]
   }
@@ -1617,21 +1870,30 @@ bastions = {
 ##########################################
 
 private_dns_zones = {
-  {% if mgmt_zone | trim == '1' %}
+  {% if (mgmt_zone | trim == '1') and (privatelink_blob_core_windows_net_dns_zone | trim == '1') %}
+  # blob.core.windows.net
   privatelink_blob_core_windows_net_zone = {
     rg_key = "mgmt_rg"
     name   = "privatelink.blob.core.windows.net"
   }
   {% endif %}
+
+  {% if (mgmt_zone | trim == '1') and (azure_api_net_dns_zone | trim == '1') %}
+  # azure-api.net
+  azure_api_net_zone = {
+    rg_key = "mgmt_rg"
+    name   = "azure-api.net"
+  }
+  {% endif %}
 }
 
 private_dns_zone_vnet_links = {
-  {% if (dns_forwarding_zone | trim == '1') and (dns_forwarding_private_dns_resolver | trim == '1') %}
-  blob_core_windows_net_zone_dns_forwarding_vnet_link = {
+  {% if (privatelink_blob_core_windows_net_dns_zone | trim == '1') and (blob_core_windows_net_dns_zone_dns_forwarding_vnet_link | trim == '1') %}
+  blob_core_windows_net_dns_zone_dns_forwarding_vnet_link = {
     rg_key               = "mgmt_rg"
     private_dns_zone_key = "privatelink_blob_core_windows_net_zone"
     vnet_key             = "dns_forwarding_vnet"
-    name                 = "dns_forwarding_vnet_private_dns_zone_link"
+    name                 = "blob_core_windows_net_dns_zone_dns_forwarding_vnet_link"
   }
   {% endif %}
 }

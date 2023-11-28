@@ -53,6 +53,16 @@ variable "firewall_network_rule_collections" {
   type    = any
 }
 
+# App gateway module
+variable "app_gateway_public_ips" {
+  default = {}
+  type    = any
+}
+variable "app_gateways" {
+  default = {}
+  type    = any
+}
+
 # Bastion module
 variable "bastion_public_ips" {
   default = {}

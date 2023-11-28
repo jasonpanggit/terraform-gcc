@@ -53,6 +53,21 @@ module "firewall" {
   firewall_network_rule_collections = var.firewall_network_rule_collections
 }
 
+module "app_gateway" {
+  source = "./modules/scaffolding/app_gateway"
+
+  # from resource group module
+  random_string   = module.resource_group.random_string
+  resource_groups = module.resource_group.scaffold_resource_groups
+
+  # from network module
+  subnets = module.network.scaffold_subnets
+
+  # App gateways
+  app_gateway_public_ips = var.app_gateway_public_ips
+  app_gateways           = var.app_gateways
+}
+
 module "bastion" {
   source = "./modules/scaffolding/bastion"
 

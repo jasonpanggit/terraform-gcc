@@ -1,216 +1,245 @@
 ---
-subscription_id: 
-tenant_id: 
-client_id: 
-client_secret: 
+#################################################################
+# Azure subscription details (do not check-in to source control)
+#################################################################
+subscription_id: enter-your-subscription-id-here
+tenant_id: enter-your-tenant-id-here
+client_id: enter-your-client-id-here
+client_secret: enter-your-client-secret-here
+################################################################# 
 
 random_string_length: 4
 location: southeastasia
 
 # internet ingress zone (Non-GEN)
 internet_ingress_zone: 1
-internet_ingress_resource_group_name: internet-ingress-rg
-internet_ingress_vnet_name: internet-ingress-vnet
-internet_ingress_vnet_cidr: 100.0.0.0/24
+internet_ingress_resource_group_name: "internet-ingress-rg"
+internet_ingress_vnet_name: "internet-ingress-vnet"
+internet_ingress_vnet_cidr: ["100.0.0.0/24"]
 
 # internet ingress firewall (Non-GEN)
-internet_ingress_fw: 0
-internet_ingress_fw_subnet_name: AzureFirewallSubnet
-internet_ingress_fw_subnet_cidr: 100.0.0.0/27
-internet_ingress_fw_public_ip_name: internet-ingress-fw-pip
-internet_ingress_fw_public_ip_allocation_method: Static
-internet_ingress_fw_public_ip_sku: Standard
-internet_ingress_fw_name: internet-ingress-fw
-internet_ingress_fw_sku_name: AZFW_VNet
-internet_ingress_fw_sku_tier: Standard
-internet_ingress_fw_ip_config_name: internet-ingress-fw-ip-config
+internet_ingress_fw: 1
+internet_ingress_fw_subnet_name: "AzureFirewallSubnet" # do not change
+internet_ingress_fw_subnet_cidr: ["100.0.0.0/26"] # min. is /26 (64 IPs) 
+internet_ingress_fw_public_ip_name: "internet-ingress-fw-pip"
+internet_ingress_fw_public_ip_allocation_method: "Static"
+internet_ingress_fw_public_ip_sku: "Standard"
+internet_ingress_fw_name: "internet-ingress-fw"
+internet_ingress_fw_sku_name: "AZFW_VNet"
+internet_ingress_fw_sku_tier: "Standard"
+internet_ingress_fw_ip_config_name: "internet-ingress-fw-ip-config"
 
 # internet ingress app gateway (Non-GEN)
-internet_ingress_appgw: 0
-internet_ingress_appgw_subnet_name: appgw-subnet
-internet_ingress_appgw_subnet_cidr: 100.0.0.32/27
-internet_ingress_appgw_sku: Standard_v2_WAF
-internet_ingress_appgw_name: internet-ingress-appgw
+internet_ingress_appgw: 1
+internet_ingress_appgw_subnet_name: "appgw-subnet"
+internet_ingress_appgw_subnet_cidr: ["100.0.0.64/27"] # min. is /29 (8 IPs)
+internet_ingress_appgw_sku: "Standard_v2_WAF" # recommended subnet size is /24 for WAF
+internet_ingress_appgw_name: "internet-ingress-appgw"
 
 # internet ingress api management (Non-GEN)
-internet_ingress_apim: 0
-internet_ingress_apim_subnet_name: apim-subnet
-internet_ingress_apim_subnet_cidr: 100.0.0.64/27
-internet_ingress_apim_sku: Developer
-internet_ingress_apim_name: internet-ingress-apim
+internet_ingress_apim: 1
+internet_ingress_apim_subnet_name: "apim-subnet"
+internet_ingress_apim_subnet_cidr: ["100.0.0.96/28"] # min. is /29 (8 IPs)
+internet_ingress_apim_name: "internet-ingress-apim" # api management name cannot have special characters (max. 3-50 characters)
+internet_ingress_apim_publisher_name: "Contoso" # change this
+internet_ingress_apim_publisher_email: "apim@contoso.com" # change this
+internet_ingress_apim_sku_name: "Developer" # Developer or Premium for GCC compliance
+internet_ingress_apim_sku_capacity: "1"
+internet_ingress_apim_virtual_network_type: "Internal"
 
 # internet ingress sftp (Non-GEN)
-internet_ingress_sftp: 0
-internet_ingress_sftp_subnet_name: sftp-subnet
-internet_ingress_sftp_subnet_cidr: 100.0.0.96/27
-internet_ingress_sftp_storage_account: 0
-internet_ingress_sftp_storage_account_name: internetingresssftpsa # storage account name cannot have special characters (max. 3-24 characters)
-internet_ingress_sftp_storage_account_tier: Standard
-internet_ingress_sftp_storage_account_replication_type: Standard_LRS
-internet_ingress_sftp_storage_account_public_network_access_enabled: false
-internet_ingress_sftp_storage_account_is_hns_enabled: true
-internet_ingress_sftp_storage_account_sftp_enabled: true
-internet_ingress_sftp_storage_account_identity_type: SystemAssigned
-internet_ingress_sftp_storage_account_private_endpoint_name: internet-ingress-sftp-sa-pe
-internet_ingress_sftp_storage_account_private_endpoint_private_service_connection_name: internet-ingress-sftp-sa-pe-psc
-internet_ingress_sftp_storage_account_private_endpoint_private_service_connection_is_manual_connection: false
-internet_ingress_sftp_storage_account_private_endpoint_private_service_connection_subresource_names: blob
+internet_ingress_sftp: 1
+internet_ingress_sftp_subnet_name: "sftp-subnet"
+internet_ingress_sftp_subnet_cidr: ["100.0.0.112/28"] # (16 IPs)
+internet_ingress_sftp_storage_account: 1
+internet_ingress_sftp_storage_account_name: "internetsftpsa" # storage account name cannot have special characters (max. 3-24 characters)
+internet_ingress_sftp_storage_account_tier: "Standard"
+internet_ingress_sftp_storage_account_replication_type: "LRS"
+internet_ingress_sftp_storage_account_public_network_access_enabled: "false"
+internet_ingress_sftp_storage_account_is_hns_enabled: "true"
+internet_ingress_sftp_storage_account_sftp_enabled: "true"
+internet_ingress_sftp_storage_account_identity_type: "SystemAssigned"
+internet_ingress_sftp_storage_account_private_endpoint_name: "internet-ingress-sftp-sa-pe"
+internet_ingress_sftp_storage_account_private_endpoint_private_service_connection_name: "internet-ingress-sftp-sa-pe-psc"
+internet_ingress_sftp_storage_account_private_endpoint_private_service_connection_is_manual_connection: "false"
+internet_ingress_sftp_storage_account_private_endpoint_private_service_connection_subresource_names: ["blob"]
 
 # internet egress zone (Non-GEN)
 internet_egress_zone: 0
-internet_egress_vnet_name: internet-egress-vnet
-internet_egress_vnet_cidr: 100.0.2.0/24
+internet_egress_vnet_name: "internet-egress-vnet"
+internet_egress_vnet_cidr: ["100.0.2.0/24"]
 
 # internet egress firewall (GEN)
 internet_egress_fw: 0
-internet_egress_fw_subnet_name: AzureFirewallSubnet
-internet_egress_fw_subnet_cidr: 100.0.2.0/27
-internet_egress_fw_public_ip_name: internet-ingress-fw-pip
-internet_egress_fw_public_ip_allocation_method: Static
-internet_egress_fw_public_ip_sku: Standard
-internet_egress_fw_name: internet-egress-fw
-internet_egress_fw_sku_name: AZFW_VNet
-internet_egress_fw_sku_tier: Standard
+internet_egress_fw_subnet_name: "AzureFirewallSubnet" # do not change
+internet_egress_fw_subnet_cidr: ["100.0.2.0/26"] # min. is /26 (64 IPs)
+internet_egress_fw_public_ip_name: "internet-ingress-fw-pip"
+internet_egress_fw_public_ip_allocation_method: "Static"
+internet_egress_fw_public_ip_sku: "Standard"
+internet_egress_fw_name: "internet-egress-fw"
+internet_egress_fw_sku_name: "AZFW_VNet"
+internet_egress_fw_sku_tier: "Standard"
 
 # intranet ingress zone (GEN)
 intranet_ingress_zone: 1
-intranet_ingress_resource_group_name: intranet-ingress-rg
-intranet_ingress_vnet_name: intranet-ingress-vnet
-intranet_ingress_vnet_cidr: 10.0.0.0/25
+intranet_ingress_resource_group_name: "intranet-ingress-rg"
+intranet_ingress_vnet_name: "intranet-ingress-vnet"
+intranet_ingress_vnet_cidr: ["10.0.0.0/25"]
 
 # intranet ingress firewall (GEN)
 intranet_ingress_fw: 0
-intranet_ingress_fw_subnet_name: AzureFirewallSubnet
-intranet_ingress_fw_subnet_cidr: 10.0.0.0/27
-intranet_ingress_fw_public_ip_name: intranet-ingress-fw-pip
-intranet_ingress_fw_public_ip_sku: Standard
-intranet_ingress_fw_name: intranet-ingress-fw
-intranet_ingress_fw_sku_name: AZFW_VNet
-intranet_ingress_fw_sku_tier: Standard
+intranet_ingress_fw_subnet_name: "AzureFirewallSubnet" # do not change
+intranet_ingress_fw_subnet_cidr: ["10.0.0.0/26"] # min. is /26 (64 IPs)
+intranet_ingress_fw_public_ip_name: "intranet-ingress-fw-pip"
+intranet_ingress_fw_public_ip_sku: "Standard"
+intranet_ingress_fw_name: "intranet-ingress-fw"
+intranet_ingress_fw_sku_name: "AZFW_VNet"
+intranet_ingress_fw_sku_tier: "Standard"
 
 # intranet ingress app gateway (GEN)
 intranet_ingress_appgw: 0
-intranet_ingress_appgw_subnet_name: appgw-subnet
-intranet_ingress_appgw_subnet_cidr: 10.0.0.32/27
-intranet_ingress_appgw_sku: Standard_v2_WAF
-intranet_ingress_appgw_name: intranet-ingress-appgw
+intranet_ingress_appgw_subnet_name: "appgw-subnet"
+intranet_ingress_appgw_subnet_cidr: ["10.0.0.64/27"]
+intranet_ingress_appgw_sku: "Standard_v2_WAF"
+intranet_ingress_appgw_name: "intranet-ingress-appgw"
 
 # intranet ingress api management (GEN)
 intranet_ingress_apim: 0
-intranet_ingress_apim_subnet_name: apim-subnet
-intranet_ingress_apim_subnet_cidr: 10.0.0.64/27
-intranet_ingress_apim_sku: Developer
-intranet_ingress_apim_name: intranet-ingress-apim
+intranet_ingress_apim_subnet_name: "apim-subnet"
+intranet_ingress_apim_subnet_cidr: ["10.0.0.96/28"]
+intranet_ingress_apim_name: "intranet-ingress-apim" # api management name cannot have special characters (max. 3-50 characters)
+intranet_ingress_apim_publisher_name: "Contoso" # change this
+intranet_ingress_apim_publisher_email: "apim@contoso.com" # change this
+intranet_ingress_apim_sku_name: "Developer" # Developer or Premium for GCC compliance
+intranet_ingress_apim_sku_capacity: "1"
+intranet_ingress_apim_virtual_network_type: "Internal"
 
 # intranet ingress sftp (GEN)
 intranet_ingress_sftp: 0
-intranet_ingress_sftp_subnet_name: sftp-subnet
-intranet_ingress_sftp_subnet_cidr: 10.0.0.96/27
+intranet_ingress_sftp_subnet_name: "sftp-subnet"
+intranet_ingress_sftp_subnet_cidr: ["10.0.0.112/28"]
 intranet_ingress_sftp_storage_account: 0
-intranet_ingress_sftp_storage_account_name: intranetingresssftpsa # storage account name cannot have special characters (max. 3-24 characters)
-intranet_ingress_sftp_storage_account_tier: Standard
-intranet_ingress_sftp_storage_account_replication_type: Standard_LRS
-intranet_ingress_sftp_storage_account_public_network_access_enabled: false
-intranet_ingress_sftp_storage_account_is_hns_enabled: true
-intranet_ingress_sftp_storage_account_sftp_enabled: true
-intranet_ingress_sftp_storage_account_identity_type: SystemAssigned
-intranet_ingress_sftp_storage_account_private_endpoint_name: intranet-ingress-sftp-sa-pe
-intranet_ingress_sftp_storage_account_private_endpoint_private_service_connection_name: intranet-ingress-sftp-sa-pe-psc
-intranet_ingress_sftp_storage_account_private_endpoint_private_service_connection_is_manual_connection: false
-intranet_ingress_sftp_storage_account_private_endpoint_private_service_connection_subresource_names: blob
+intranet_ingress_sftp_storage_account_name: "intranetsftpsa" # storage account name cannot have special characters (max. 3-24 characters)
+intranet_ingress_sftp_storage_account_tier: "Standard"
+intranet_ingress_sftp_storage_account_replication_type: "LRS"
+intranet_ingress_sftp_storage_account_public_network_access_enabled: "false"
+intranet_ingress_sftp_storage_account_is_hns_enabled: "true"
+intranet_ingress_sftp_storage_account_sftp_enabled: "true"
+intranet_ingress_sftp_storage_account_identity_type: "SystemAssigned"
+intranet_ingress_sftp_storage_account_private_endpoint_name: "intranet-ingress-sftp-sa-pe"
+intranet_ingress_sftp_storage_account_private_endpoint_private_service_connection_name: "intranet-ingress-sftp-sa-pe-psc"
+intranet_ingress_sftp_storage_account_private_endpoint_private_service_connection_is_manual_connection: "false"
+intranet_ingress_sftp_storage_account_private_endpoint_private_service_connection_subresource_names: ["blob"]
 
 # intranet egress zone (GEN)
 intranet_egress_zone: 0
-intranet_egress_vnet_name: intranet-egress-vnet
-intranet_egress_vnet_cidr: 10.0.3.0/25
+intranet_egress_vnet_name: "intranet-egress-vnet"
+intranet_egress_vnet_cidr: ["10.0.3.0/25"]
 
 # intranet egress firewall (GEN)
 intranet_egress_fw: 0
-intranet_egress_fw_subnet_name: AzureFirewallSubnet
-intranet_egress_fw_subnet_cidr: 10.0.4.0/27
-intranet_egress_fw_public_ip_name: intranet-ingress-fw-pip
-intranet_egress_fw_public_ip_allocation_method: Static
-intranet_egress_fw_public_ip_sku: Standard
-intranet_egress_fw_name: intranet-egress-fw
-intranet_egress_fw_sku_name: AZFW_VNet
-intranet_egress_fw_sku_tier: Standard
+intranet_egress_fw_subnet_name: "AzureFirewallSubnet"
+intranet_egress_fw_subnet_cidr: ["10.0.4.0/27"]
+intranet_egress_fw_public_ip_name: "intranet-ingress-fw-pip"
+intranet_egress_fw_public_ip_allocation_method: "Static"
+intranet_egress_fw_public_ip_sku: "Standard"
+intranet_egress_fw_name: "intranet-egress-fw"
+intranet_egress_fw_sku_name: "AZFW_VNet"
+intranet_egress_fw_sku_tier: "Standard"
 
 # workload zone (Non-GEN)
 workload_zone: 1
-workload_resource_group_name: workload-rg
-workload_vnet_name: workload-vnet
-workload_vnet_cidr: 100.0.1.0/24
+workload_resource_group_name: "workload-rg"
+workload_vnet_name: "workload-vnet"
+workload_vnet_cidr: ["100.0.1.0/24"]
 
 # workload app (Non-GEN)
 workload_app: 1
-workload_app_subnet_name: workload-app-subnet
-workload_app_subnet_cidr: 100.0.1.0/25
+workload_app_subnet_name: "workload-app-subnet"
+workload_app_subnet_cidr: ["100.0.1.0/25"]
 
 # workload db (Non-GEN)
 workload_db: 1
-workload_db_subnet_name: workload-db-subnet
-workload_db_subnet_cidr: 100.0.1.128/25
+workload_db_subnet_name: "workload-db-subnet"
+workload_db_subnet_cidr: ["100.0.1.128/25"]
 
 # mgmt zone (GEN)
 mgmt_zone: 1
-mgmt_resource_group_name: mgmt-rg
-mgmt_vnet_name: mgmt-vnet
-mgmt_vnet_cidr: 10.0.1.0/25
+mgmt_resource_group_name: "mgmt-rg"
+mgmt_vnet_name: "mgmt-vnet"
+mgmt_vnet_cidr: ["10.0.1.0/25"]
 
-mgmt_bastion: 0
-mgmt_bastion_subnet_name: AzureBastionSubnet # do not change
-mgmt_bastion_subnet_cidr: 10.0.1.0/27
-mgmt_bastion_public_ip_name: bastion-pip
-mgmt_bastion_public_ip_sku: Standard
-mgmt_bastion_public_ip_allocation_method: Static
-mgmt_bastion_name: mgmt-bastion
-mgmt_bastion_ip_config_name: mgmt-bastion-ip-config
+# mgmt bastion
+mgmt_bastion: 1
+mgmt_bastion_subnet_name: "AzureBastionSubnet" # do not change
+mgmt_bastion_subnet_cidr: ["10.0.1.0/27"]
+mgmt_bastion_public_ip_name: "bastion-pip"
+mgmt_bastion_public_ip_sku: "Standard"
+mgmt_bastion_public_ip_allocation_method: "Static"
+mgmt_bastion_name: "mgmt-bastion"
+mgmt_bastion_ip_config_name: "mgmt-bastion-ip-config"
 
 mgmt_adds: 1
-mgmt_adds_subnet_name: adds-subnet
-mgmt_adds_subnet_cidr: 10.0.1.32/27
+mgmt_adds_subnet_name: "adds-subnet"
+mgmt_adds_subnet_cidr: ["10.0.1.32/27"]
 
 mgmt_patch: 1
-mgmt_patch_subnet_name: patch-subnet
-mgmt_patch_subnet_cidr: 10.0.1.64/27
+mgmt_patch_subnet_name: "patch-subnet"
+mgmt_patch_subnet_cidr: ["10.0.1.64/27"]
 
 mgmt_security: 1
-mgmt_security_subnet_name: security-subnet
-mgmt_security_subnet_cidr: 10.0.1.96/27
+mgmt_security_subnet_name: "security-subnet"
+mgmt_security_subnet_cidr: ["10.0.1.96/27"]
 
 # devops zone (GEN)
 devops_zone: 1
-devops_resource_group_name: devops-rg
-devops_vnet_name: devops-vnet
-devops_vnet_cidr: 10.0.2.0/25
+devops_resource_group_name: "devops-rg"
+devops_vnet_name: "devops-vnet"
+devops_vnet_cidr: ["10.0.2.0/25"]
 devops_runner: 1
-devops_runner_subnet_name: runner-subnet
-devops_runner_subnet_cidr: 10.0.2.0/27
+devops_runner_subnet_name: "runner-subnet"
+devops_runner_subnet_cidr: ["10.0.2.0/27"]
 
 # dns forwarding zone (GEN)
 dns_forwarding_zone: 1
-dns_forwarding_resource_group_name: dns-forwarding-rg
-dns_forwarding_vnet_name: dns-forwarding-vnet
-dns_forwarding_vnet_cidr: 10.0.3.0/25
-dns_forwarding_private_dns_resolver: 0
-dns_forwarding_private_dns_resolver_inbound_subnet_name: private-dns-resolver-inbound-subnet
-dns_forwarding_private_dns_resolver_inbound_subnet_cidr: 10.0.3.0/27
-dns_forwarding_private_dns_resolver_outbound_subnet_name: private-dns-resolver-outbound-subnet
-dns_forwarding_private_dns_resolver_outbound_subnet_cidr: 10.0.3.32/27
-dns_forwarding_private_dns_resolver_name: dns-forwarding-private-dns-resolver
+dns_forwarding_resource_group_name: "dns-forwarding-rg"
+dns_forwarding_vnet_name: "dns-forwarding-vnet"
+dns_forwarding_vnet_cidr: ["10.0.3.0/25"]
+dns_forwarding_private_dns_resolver: 1
+dns_forwarding_private_dns_resolver_inbound_subnet_name: "private-dns-resolver-inbound-subnet"
+dns_forwarding_private_dns_resolver_inbound_subnet_cidr: ["10.0.3.0/27"]
+dns_forwarding_private_dns_resolver_outbound_subnet_name: "private-dns-resolver-outbound-subnet"
+dns_forwarding_private_dns_resolver_outbound_subnet_cidr: ["10.0.3.32/27"]
+dns_forwarding_private_dns_resolver_name: "dns-forwarding-private-dns-resolver"
 
 ##########################################
 # Network Security Group Configuration
 ##########################################
 
 # internet ingress appgw nsg
-internet_ingress_appgw_subnet_nsg: 0
-internet_ingress_appgw_subnet_nsg_name: internet-ingress-appgw-subnet-nsg
+internet_ingress_appgw_subnet_nsg: 1
+internet_ingress_appgw_subnet_nsg_name: "internet-ingress-appgw-subnet-nsg"
+
+# intranet ingress appgw nsg
+intranet_ingress_appgw_subnet_nsg: 0
+intranet_ingress_appgw_subnet_nsg_name: "intranet-ingress-appgw-subnet-nsg"
 
 # workload app nsg
-workload_app_subnet_nsg: 0
-workload_app_subnet_nsg_name: workload-app-subnet-nsg
+workload_app_subnet_nsg: 1
+workload_app_subnet_nsg_name: "workload-app-subnet-nsg"
 
 # workload db nsg
-workload_db_subnet_nsg: 0
-workload_db_subnet_nsg_name: workload-db-subnet-nsg
+workload_db_subnet_nsg: 1
+workload_db_subnet_nsg_name: "workload-db-subnet-nsg"
+
+##########################################
+# Private DNS Zones Configuration
+##########################################
+
+# blob.core.windows.net zone and its respective vnet links
+privatelink_blob_core_windows_net_dns_zone: 1
+blob_core_windows_net_dns_zone_dns_forwarding_vnet_link: 1
+
+# azure-api.net zone and its respective vnet links
+azure_api_net_dns_zone: 1
+# TODO: vnet links

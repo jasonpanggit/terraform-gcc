@@ -1,0 +1,16 @@
+---
+##############################################
+# Firewall Configuration
+##############################################
+# internet egress firewall
+internet_egress_fw_public_ip_name: "internet-ingress-fw-pip"
+internet_egress_fw_public_ip_allocation_method: "Static"
+internet_egress_fw_public_ip_sku: "Standard"
+internet_egress_fw_name: "internet-egress-fw"
+internet_egress_fw_sku_name: "AZFW_VNet"
+internet_egress_fw_sku_tier: "Standard"
+
+##############################################
+# NAT Gateway Configuration
+##############################################
+# TODO: internet egress NAT gateway

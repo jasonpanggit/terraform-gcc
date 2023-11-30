@@ -642,21 +642,43 @@ subnets = {
 
 # Route tables
 route_tables = {
-  # workload_app_to_internet_egress_firewall_route_table = {
-  #   rg_key                        = "workload_rg"
-  #   name                          = "workload_app_to_internet_egress_firewall_route_table"
-  #   disable_bgp_route_propagation = true
-  #   routes = [
-  #     {
-  #       name                   = "Route-to-Firewall"
-  #       address_prefix         = "0.0.0.0/0"
-  #       next_hop_type          = "VirtualAppliance"
-  #       next_hop_resource_type = "firewall"
-  #       next_hop_resource_key  = "internet_egress_firewall"
-  #     }
-  #   ]
-  #   tags = {}
-  # }
+  {% if (workload_zone | trim == '1') and (workload_aks | trim == '1') %}
+  {% if internet_egress_fw | trim == '1' %}
+  # workload app to internet egress firewall route table
+  workload_app_to_internet_egress_firewall_route_table = {
+    rg_key                        = "workload_rg"
+    name                          = "workload-app-to-internet-egress-fw-route-table"
+    disable_bgp_route_propagation = true
+    routes = [
+      {
+        name                   = "Route-to-Firewall"
+        address_prefix         = "0.0.0.0/0"
+        next_hop_type          = "VirtualAppliance"
+        next_hop_resource_type = "firewall"
+        next_hop_resource_key  = "internet_egress_firewall"
+      }
+    ]
+    tags = {}
+  }
+  {% else %}
+  # workload app to internet ingress firewall route table
+  workload_app_to_internet_ingress_firewall_route_table = {
+    rg_key                        = "workload_rg"
+    name                          = "workload-app-to-internet-ingress-fw-route-table"
+    disable_bgp_route_propagation = true
+    routes = [
+      {
+        name                   = "Route-to-Firewall"
+        address_prefix         = "0.0.0.0/0"
+        next_hop_type          = "VirtualAppliance"
+        next_hop_resource_type = "firewall"
+        next_hop_resource_key  = "internet_ingress_firewall"
+      }
+    ]
+    tags = {}
+  }
+  {% endif %} 
+  {% endif %}
 
   # mgmt_patch_to_internet_egress_firewall_route_table = {
   #   rg_key                        = "mgmt_rg"
@@ -677,11 +699,20 @@ route_tables = {
 
 # Route tables associations
 route_tables_associations = {
-  # workload_app_subnet_internet_egress_firewall_route_table_assoc = {
-  #   subnet_key      = "workload_app_subnet"
-  #   route_table_key = "workload_to_internet_egress_firewall_route_table"
-  # }
-
+  {% if (workload_zone | trim == '1') and (workload_aks | trim == '1') %}
+  {% if internet_egress_fw | trim == '1' %}
+  workload_app_subnet_internet_egress_fw_route_table_assoc = {
+    subnet_key      = "workload_app_subnet"
+    route_table_key = "workload_app_to_internet_egress_firewall_route_table"
+  }
+  {% else %}
+  workload_app_subnet_internet_ingress_fw_route_table_assoc = {
+    subnet_key      = "workload_app_subnet"
+    route_table_key = "workload_app_to_internet_ingress_firewall_route_table"
+  }
+  {% endif %}
+  {% endif %}
+  
   # mgmt_patch_subnet_internet_egress_firewall_route_table_assoc = {
   #   subnet_key      = "mgmt_patch_subnet"
   #   route_table_key = "mgmt_patch_to_internet_egress_firewall_route_table"
@@ -1511,239 +1542,127 @@ firewalls = {
 }
 
 firewall_app_rule_collections = {
-  # internet_egress_firewall_aks_app_rules_collection = {
-  #   rg_key       = "internet_egress_rg"
-  #   firewall_key = "internet_egress_firewall"
-  #   name         = "internet-aks-app-rules"
-  #   priority     = "100"
-  #   action       = "Allow"
-  #   rules = [
-  #     {
-  #       name             = "AllowMicrosoftFqdns"
-  #       source_addresses = ["*"]
-  #       fqdn_tags        = null
-  #       target_fqdns = [
-  #         "*.cdn.mscr.io",
-  #         "mcr.microsoft.com",
-  #         "*.data.mcr.microsoft.com",
-  #         "management.azure.com",
-  #         "login.microsoftonline.com",
-  #         "acs-mirror.azureedge.net",
-  #         "dc.services.visualstudio.com",
-  #         "*.opinsights.azure.com",
-  #         "*.oms.opinsights.azure.com",
-  #         "*.microsoftonline.com",
-  #         "*.monitoring.azure.com"
-  #       ]
-  #       protocols = [
-  #         {
-  #           port = "80"
-  #           type = "Http"
-  #         },
-  #         {
-  #           port = "443"
-  #           type = "Https"
-  #         }
-  #       ]
-  #     },
-  #     {
-  #       name             = "AllowFqdnsForOsUpdates"
-  #       source_addresses = ["*"]
-  #       fqdn_tags        = null
-  #       target_fqdns = [
-  #         "security.ubuntu.com",
-  #         "ntp.ubuntu.com",
-  #         "packages.microsoft.com"
-  #       ]
-  #       protocols = [
-  #         {
-  #           port = "80"
-  #           type = "Http"
-  #         },
-  #         {
-  #           port = "443"
-  #           type = "Https"
-  #         }
-  #       ]
-  #     },
-  #     {
-  #       name             = "ServiceTag"
-  #       source_addresses = ["*"]
-  #       fqdn_tags = [
-  #         "AzureKubernetesService"
-  #       ]
-  #       target_fqdns = null
-  #       protocols    = []
-  #     }
-  #   ]
-  # }
-
-  # intranet_egress_firewall_aks_app_rules_collection = {
-  #   rg_key       = "intranet_egress_rg"
-  #   firewall_key = "intranet_egress_firewall"
-  #   name         = "intranet-aks-app-rules"
-  #   priority     = "200"
-  #   action       = "Allow"
-  #   rules = [
-  #     {
-  #       name             = "AllowMicrosoftFqdns"
-  #       source_addresses = ["*"]
-  #       fqdn_tags        = null
-  #       target_fqdns = [
-  #         "*.cdn.mscr.io",
-  #         "mcr.microsoft.com",
-  #         "*.data.mcr.microsoft.com",
-  #         "management.azure.com",
-  #         "login.microsoftonline.com",
-  #         "acs-mirror.azureedge.net",
-  #         "dc.services.visualstudio.com",
-  #         "*.opinsights.azure.com",
-  #         "*.oms.opinsights.azure.com",
-  #         "*.microsoftonline.com",
-  #         "*.monitoring.azure.com"
-  #       ]
-  #       protocols = [
-  #         {
-  #           port = "80"
-  #           type = "Http"
-  #         },
-  #         {
-  #           port = "443"
-  #           type = "Https"
-  #         }
-  #       ]
-  #     },
-  #     {
-  #       name             = "AllowFqdnsForOsUpdates"
-  #       source_addresses = ["*"]
-  #       fqdn_tags        = null
-  #       target_fqdns = [
-  #         "security.ubuntu.com",
-  #         "ntp.ubuntu.com",
-  #         "packages.microsoft.com"
-  #       ]
-  #       protocols = [
-  #         {
-  #           port = "80"
-  #           type = "Http"
-  #         },
-  #         {
-  #           port = "443"
-  #           type = "Https"
-  #         }
-  #       ]
-  #     },
-  #     {
-  #       name             = "ServiceTag"
-  #       source_addresses = ["*"]
-  #       fqdn_tags = [
-  #         "AzureKubernetesService"
-  #       ]
-  #       target_fqdns = null
-  #       protocols    = []
-  #     }
-  #   ]
-  # }
+  {% if (internet_ingress_fw | trim == '1') and (workload_aks | trim == '1') %}
+  internet_ingress_firewall_aks_app_rules_collection = {
+    rg_key       = "internet_ingress_rg"
+    firewall_key = "internet_ingress_firewall"
+    name         = "aks-app-rules"
+    priority     = "100"
+    action       = "Allow"
+    rules = [
+      {
+        name             = "AllowMicrosoftFqdns"
+        source_addresses = ["*"]
+        fqdn_tags        = null
+        target_fqdns = [
+          "*.cdn.mscr.io",
+          "mcr.microsoft.com",
+          "*.data.mcr.microsoft.com",
+          "management.azure.com",
+          "login.microsoftonline.com",
+          "acs-mirror.azureedge.net",
+          "dc.services.visualstudio.com",
+          "*.opinsights.azure.com",
+          "*.oms.opinsights.azure.com",
+          "*.microsoftonline.com",
+          "*.monitoring.azure.com"
+        ]
+        protocols = [
+          {
+            port = "80"
+            type = "Http"
+          },
+          {
+            port = "443"
+            type = "Https"
+          }
+        ]
+      },
+      {
+        name             = "AllowFqdnsForOsUpdates"
+        source_addresses = ["*"]
+        fqdn_tags        = null
+        target_fqdns = [
+          "security.ubuntu.com",
+          "ntp.ubuntu.com",
+          "packages.microsoft.com"
+        ]
+        protocols = [
+          {
+            port = "80"
+            type = "Http"
+          },
+          {
+            port = "443"
+            type = "Https"
+          }
+        ]
+      },
+      {
+        name             = "ServiceTag"
+        source_addresses = ["*"]
+        fqdn_tags = [
+          "AzureKubernetesService"
+        ]
+        target_fqdns = null
+        protocols    = []
+      }
+    ]
+  }
+  {% endif %}
 }
 
 firewall_network_rule_collections = {
-  # internet_egress_firewall_aks_network_rules_collection = {
-  #   rg_key       = "internet_egress_rg"
-  #   firewall_key = "internet_egress_firewall"
-  #   name         = "aks-network-rules"
-  #   priority     = "100"
-  #   action       = "Allow"
-  #   rules = [
-  #     {
-  #       name                  = "apiudp"
-  #       source_addresses      = ["*"]
-  #       destination_addresses = ["AzureCloud.SoutheastAsia"]
-  #       destination_ports     = ["1194"]
-  #       protocols             = ["UDP"]
-  #     },
-  #     {
-  #       name                  = "aksfwnr"
-  #       source_addresses      = ["*"]
-  #       destination_addresses = ["AzureCloud.SoutheastAsia"]
-  #       destination_ports     = ["9000"]
-  #       protocols             = ["TCP"]
-  #     },
-  #     {
-  #       name                  = "DNS"
-  #       source_addresses      = ["*"]
-  #       destination_ports     = ["53"]
-  #       destination_addresses = ["*"]
-  #       protocols             = ["UDP"]
-  #     },
-  #     {
-  #       name              = "ServiceTags"
-  #       source_addresses  = ["*"]
-  #       destination_ports = ["*"]
-  #       destination_addresses = [
-  #         "AzureContainerRegistry",
-  #         "MicrosoftContainerRegistry",
-  #         "AzureActiveDirectory",
-  #       ]
-  #       protocols = ["Any"]
-  #     },
-  #     {
-  #       name                  = "Time"
-  #       source_addresses      = ["*"]
-  #       destination_ports     = ["123"]
-  #       destination_addresses = ["*"]
-  #       protocols             = ["UDP"]
-  #     }
-  #   ]
-  # }
-
-  # intranet_egress_firewall_aks_network_rules_collection = {
-  #   rg_key       = "intranet_egress_rg"
-  #   firewall_key = "intranet_egress_firewall"
-  #   name         = "aks-network-rules"
-  #   priority     = "200"
-  #   action       = "Allow"
-  #   rules = [
-  #     {
-  #       name                  = "apiudp"
-  #       source_addresses      = ["*"]
-  #       destination_addresses = ["AzureCloud.SoutheastAsia"]
-  #       destination_ports     = ["1194"]
-  #       protocols             = ["UDP"]
-  #     },
-  #     {
-  #       name                  = "aksfwnr"
-  #       source_addresses      = ["*"]
-  #       destination_addresses = ["AzureCloud.SoutheastAsia"]
-  #       destination_ports     = ["9000"]
-  #       protocols             = ["TCP"]
-  #     },
-  #     {
-  #       name                  = "DNS"
-  #       source_addresses      = ["*"]
-  #       destination_ports     = ["53"]
-  #       destination_addresses = ["*"]
-  #       protocols             = ["UDP"]
-  #     },
-  #     {
-  #       name              = "ServiceTags"
-  #       source_addresses  = ["*"]
-  #       destination_ports = ["*"]
-  #       destination_addresses = [
-  #         "AzureContainerRegistry",
-  #         "MicrosoftContainerRegistry",
-  #         "AzureActiveDirectory",
-  #       ]
-  #       protocols = ["Any"]
-  #     },
-  #     {
-  #       name                  = "Time"
-  #       source_addresses      = ["*"]
-  #       destination_ports     = ["123"]
-  #       destination_addresses = ["*"]
-  #       protocols             = ["UDP"]
-  #     }
-  #   ]
-  # }
+  {% if (internet_ingress_fw | trim == '1') and (workload_aks | trim == '1') %}
+  internet_ingress_firewall_aks_network_rules_collection = {
+    rg_key       = "internet_ingress_rg"
+    firewall_key = "internet_ingress_firewall"
+    name         = "aks-network-rules"
+    priority     = "100"
+    action       = "Allow"
+    rules = [
+      {
+        name                  = "apiudp"
+        source_addresses      = ["*"]
+        destination_addresses = ["AzureCloud.SoutheastAsia"]
+        destination_ports     = ["1194"]
+        protocols             = ["UDP"]
+      },
+      {
+        name                  = "aksfwnr"
+        source_addresses      = ["*"]
+        destination_addresses = ["AzureCloud.SoutheastAsia"]
+        destination_ports     = ["9000"]
+        protocols             = ["TCP"]
+      },
+      {
+        name                  = "DNS"
+        source_addresses      = ["*"]
+        destination_ports     = ["53"]
+        destination_addresses = ["*"]
+        protocols             = ["UDP"]
+      },
+      {
+        name              = "ServiceTags"
+        source_addresses  = ["*"]
+        destination_ports = ["*"]
+        destination_addresses = [
+          "AzureContainerRegistry",
+          "MicrosoftContainerRegistry",
+          "AzureActiveDirectory",
+        ]
+        protocols = ["Any"]
+      },
+      {
+        name                  = "Time"
+        source_addresses      = ["*"]
+        destination_ports     = ["123"]
+        destination_addresses = ["*"]
+        protocols             = ["UDP"]
+      }
+    ]
+  }
+  {% endif %}
 }
 
 ##########################################
@@ -2066,6 +1985,15 @@ private_dns_zones = {
     name   = "azure-api.net"
   }
   {% endif %}
+
+  {% if (workload_zone | trim == '1') and (privatelink_region_azmk8s_io_zone  | trim == '1') %}
+  # privatelink.region.azmk8s.io
+  privatelink_region_azmk8s_io_zone = {
+    rg_key = "mgmt_rg"
+    name   = "privatelink.region.azmk8s.io"
+  }
+  {% endif %}
+
 }
 
 private_dns_zone_vnet_links = {
@@ -2093,6 +2021,15 @@ private_dns_zone_vnet_links = {
     private_dns_zone_key = "azure_api_net_zone"
     vnet_key             = "workload_vnet"
     name                 = "azure-api-net-dns-zone-workload-vnet-link"
+  }
+  {% endif %}
+
+  {% if (workload_zone | trim == '1') and (azmk8s_io_zone_workload_vnet_link | trim == '1') %}
+  azmk8s_io_zone_workload_vnet_link = {
+    rg_key               = "mgmt_rg"
+    private_dns_zone_key = "privatelink_region_azmk8s_io_zone"
+    vnet_key             = "workload_vnet"
+    name                 = "azmk8s_io_zone_workload_vnet_link"
   }
   {% endif %}
 }
@@ -2129,6 +2066,71 @@ private_dns_resolvers_outbound_endpoints = {
     subnet_key                   = "private_dns_resolver_outbound_subnet"
     name                         = "private_dns_resolver_outbound_endpoint"
     private_ip_allocation_method = "Dynamic"
+  }
+  {% endif %}
+}
+
+##########################################
+# AKS module
+##########################################
+
+user_assigned_identities = {
+  {% if (workload_zone | trim == '1') and (workload_aks | trim == '1') %}
+  workload_aks_user_assigned_identity = {
+    rg_key = "workload_rg"
+    name   = "aks-user-assigned-identity"
+  }
+  {% endif %}
+}
+
+aks_clusters = {
+  {% if (workload_zone | trim == '1') and (workload_aks | trim == '1') %}
+  workload_aks_private_cluster = {
+    rg_key                             = "workload_rg"
+    private_dns_zone_key               = "privatelink_region_azmk8s_io_zone"
+    subnet_key                         = "workload_app_subnet"
+    user_assigned_identity_key         = "workload_aks_user_assigned_identity"
+    name                               = "{{ workload_aks_name }}"
+    dns_prefix                         = "{{ workload_aks_dns_prefix }}"
+    private_cluster_enabled            = {{ workload_aks_private_cluster_enabled | safe }}
+    
+    # default node pool
+    default_node_pool_name             = "{{ workload_aks_default_node_pool_name }}"
+    default_node_pool_node_count       = "{{ workload_aks_default_node_pool_node_count }}"
+    default_node_pool_vm_size          = "{{ workload_aks_default_node_pool_vm_size }}"
+    #zones                             = ["1", "2", "3"]
+    
+    # network profile
+    network_profile_network_plugin     = "{{ workload_aks_network_profile_network_plugin }}"
+    network_profile_outbound_type      = "{{ workload_aks_network_profile_outbound_type }}"
+    network_profile_load_balancer_sku  = "{{ workload_aks_network_profile_load_balancer_sku }}"
+    network_profile_docker_bridge_cidr = "{{ workload_aks_network_profile_docker_bridge_cidr }}"
+    network_profile_dns_service_ip     = "{{ workload_aks_network_profile_dns_service_ip }}"
+    network_profile_service_cidr       = "{{ workload_aks_network_profile_service_cidr }}"
+    
+    # identity
+    identity_type                      = "UserAssigned"
+    
+    # proxy_settings = [
+    #   {
+    #     http_proxy  = "http://<vm-ip>:3128/"
+    #     https_proxy = "http://<vm-ip>:3128/"
+    #   }
+    # ]
+  }
+  {% endif %}
+}
+
+aks_cluster_node_pools = {
+  {% if (workload_zone | trim == '1') and (workload_aks | trim == '1') and (workload_aks_user_node_pool | trim == '1') %}
+  workload_aks_private_cluster_user_node_pool = {
+    rg_key      = "workload_rg"
+    cluster_key = "workload_aks_private_cluster"
+    subnet_key  = "workload_app_subnet"
+    mode        = "user"
+    node_count  = "{{ workload_aks_private_cluster_user_node_pool_node_count }}"
+    vm_size     = "{{ workload_aks_private_cluster_user_node_pool_vm_size }}"
+    #zones       = ["1", "2", "3"]
   }
   {% endif %}
 }

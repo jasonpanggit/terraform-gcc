@@ -1,0 +1,11 @@
+---
+##############################################
+# Firewall Configuration
+##############################################
+# intranet egress firewall
+intranet_egress_fw_public_ip_name: "intranet-ingress-fw-pip"
+intranet_egress_fw_public_ip_allocation_method: "Static"
+intranet_egress_fw_public_ip_sku: "Standard"
+intranet_egress_fw_name: "intranet-egress-fw"
+intranet_egress_fw_sku_name: "AZFW_VNet"
+intranet_egress_fw_sku_tier: "Standard"

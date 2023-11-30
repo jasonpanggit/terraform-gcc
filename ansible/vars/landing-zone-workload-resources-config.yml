@@ -1,0 +1,22 @@
+---
+##############################################
+# App Configuration
+##############################################
+
+# aks private cluster
+workload_aks: 1
+workload_aks_name: "workload-aks"
+workload_aks_dns_prefix: "aks-private"
+workload_aks_private_cluster_enabled: "true"
+workload_aks_default_node_pool_name: "default"
+workload_aks_default_node_pool_node_count: "1"
+workload_aks_default_node_pool_vm_size: "Standard_D2_v2"
+workload_aks_network_profile_network_plugin: "azure"
+workload_aks_network_profile_outbound_type: "userDefinedRouting"
+workload_aks_network_profile_load_balancer_sku: "standard"
+workload_aks_network_profile_docker_bridge_cidr: "172.17.0.1/16"
+workload_aks_network_profile_dns_service_ip: "10.41.0.10"
+workload_aks_network_profile_service_cidr: "10.41.0.0/24"
+workload_aks_user_node_pool: 1
+workload_aks_private_cluster_user_node_pool_node_count: 1 
+workload_aks_private_cluster_user_node_pool_vm_size: "Standard_D2_v2"

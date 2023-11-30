@@ -1,0 +1,70 @@
+---
+##############################################
+# Firewall Configuration
+##############################################
+# internet ingress firewall
+internet_ingress_fw_public_ip_name: "internet-ingress-fw-pip"
+internet_ingress_fw_public_ip_allocation_method: "Static"
+internet_ingress_fw_public_ip_sku: "Standard"
+internet_ingress_fw_name: "internet-ingress-fw"
+internet_ingress_fw_sku_name: "AZFW_VNet"
+internet_ingress_fw_sku_tier: "Standard"
+internet_ingress_fw_ip_config_name: "internet-ingress-fw-ip-config"
+
+##############################################
+# App Gateway Configuration
+##############################################
+# internet ingress app gateway
+internet_ingress_appgw_public_ip_name: "internet-ingress-appgw-pip"
+internet_ingress_appgw_public_ip_allocation_method: "Static"
+internet_ingress_appgw_public_ip_sku: "Standard"
+internet_ingress_appgw_name: "internet-ingress-appgw"
+internet_ingress_appgw_sku_name: "WAF_v2" # recommended subnet size is /24 for WAF
+internet_ingress_appgw_sku_tier: "WAF_v2"
+internet_ingress_appgw_sku_capacity: "1"
+internet_ingress_appgw_gw_ip_config_name: "internet-ingress-appgw-gw-ip-config"
+internet_ingress_appgw_frontend_port_name: "internet-ingress-appgw-frontend-port"
+internet_ingress_appgw_frontend_port: 80
+internet_ingress_appgw_frontend_public_ip_config_name: "internet-ingress-appgw-frontend-public-ip-config"
+internet_ingress_appgw_frontend_private_ip_config_name: "internet-ingress-appgw-frontend-private-ip-config"
+internet_ingress_appgw_frontend_private_ip_config_private_ip_address: "100.0.0.68" # hardcoded - need to change if subnet cidr changes
+internet_ingress_appgw_backend_address_pool_name: "internet-ingress-appgw-backend-address-pool"
+internet_ingress_appgw_backend_http_settings_name: "internet-ingress-appgw-backend-http-settings"
+internet_ingress_appgw_backend_http_settings_cookie_based_affinity: "Disabled"
+internet_ingress_appgw_backend_http_settings_path: "/"
+internet_ingress_appgw_backend_http_settings_port: 80
+internet_ingress_appgw_backend_http_settings_protocol: "Http"
+internet_ingress_appgw_backend_http_settings_request_timeout: 30
+internet_ingress_appgw_http_listener_name: "internet-ingress-appgw-http-listener"
+internet_ingress_appgw_http_listener_protocol: "Http"
+internet_ingress_appgw_request_routing_rule_name: "internet-ingress-appgw-request-routing-rule"
+internet_ingress_appgw_request_routing_rule_type: "Basic"
+internet_ingress_appgw_request_routing_rule_priority: 1
+
+##############################################
+# API Management Configuration
+##############################################
+# internet ingress api management
+internet_ingress_apim_name: "internet-ingress-apim" # api management name cannot have special characters (max. 3-50 characters)
+internet_ingress_apim_publisher_name: "Contoso" # change this
+internet_ingress_apim_publisher_email: "apim@contoso.com" # change this
+internet_ingress_apim_sku_name: "Developer" # Developer or Premium for GCC compliance
+internet_ingress_apim_sku_capacity: "1"
+internet_ingress_apim_virtual_network_type: "Internal"
+
+##############################################
+# Storage Account SFTP Configuration
+##############################################
+# internet ingress storage account sftp
+internet_ingress_sftp_storage_account: 1
+internet_ingress_sftp_storage_account_name: "internetsftpsa" # storage account name cannot have special characters (max. 3-24 characters)
+internet_ingress_sftp_storage_account_tier: "Standard"
+internet_ingress_sftp_storage_account_replication_type: "LRS"
+internet_ingress_sftp_storage_account_public_network_access_enabled: "false"
+internet_ingress_sftp_storage_account_is_hns_enabled: "true"
+internet_ingress_sftp_storage_account_sftp_enabled: "true"
+internet_ingress_sftp_storage_account_identity_type: "SystemAssigned"
+internet_ingress_sftp_storage_account_private_endpoint_name: "internet-ingress-sftp-sa-pe"
+internet_ingress_sftp_storage_account_private_endpoint_private_service_connection_name: "internet-ingress-sftp-sa-pe-psc"
+internet_ingress_sftp_storage_account_private_endpoint_private_service_connection_is_manual_connection: "false"
+internet_ingress_sftp_storage_account_private_endpoint_private_service_connection_subresource_names: ["blob"]

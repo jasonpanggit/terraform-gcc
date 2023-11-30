@@ -1,0 +1,68 @@
+---
+##############################################
+# Firewall Configuration
+##############################################
+# intranet ingress firewall
+intranet_ingress_fw_public_ip_name: "intranet-ingress-fw-pip"
+intranet_ingress_fw_public_ip_sku: "Standard"
+intranet_ingress_fw_name: "intranet-ingress-fw"
+intranet_ingress_fw_sku_name: "AZFW_VNet"
+intranet_ingress_fw_sku_tier: "Standard"
+
+##############################################
+# App Gateway Configuration
+##############################################
+# intranet ingress app gateway (GEN)
+intranet_ingress_appgw_public_ip_name: "intranet-ingress-appgw-pip"
+intranet_ingress_appgw_public_ip_allocation_method: "Static"
+intranet_ingress_appgw_public_ip_sku: "Standard"
+intranet_ingress_appgw_name: "intranet-ingress-appgw"
+intranet_ingress_appgw_sku_name: "WAF_v2" # recommended subnet size is /24 for WAF
+intranet_ingress_appgw_sku_tier: "WAF_v2"
+intranet_ingress_appgw_sku_capacity: "1"
+intranet_ingress_appgw_gw_ip_config_name: "intranet-ingress-appgw-gw-ip-config"
+intranet_ingress_appgw_frontend_port_name: "intranet-ingress-appgw-frontend-port"
+intranet_ingress_appgw_frontend_port: 80
+intranet_ingress_appgw_frontend_public_ip_config_name: "intranet-ingress-appgw-frontend-public-ip-config"
+intranet_ingress_appgw_frontend_private_ip_config_name: "intranet-ingress-appgw-frontend-private-ip-config"
+intranet_ingress_appgw_frontend_private_ip_config_private_ip_address: "10.0.0.68" # hardcoded - need to change if subnet cidr changes
+intranet_ingress_appgw_backend_address_pool_name: "intranet-ingress-appgw-backend-address-pool"
+intranet_ingress_appgw_backend_http_settings_name: "intranet-ingress-appgw-backend-http-settings"
+intranet_ingress_appgw_backend_http_settings_cookie_based_affinity: "Disabled"
+intranet_ingress_appgw_backend_http_settings_path: "/"
+intranet_ingress_appgw_backend_http_settings_port: 80
+intranet_ingress_appgw_backend_http_settings_protocol: "Http"
+intranet_ingress_appgw_backend_http_settings_request_timeout: 30
+intranet_ingress_appgw_http_listener_name: "intranet-ingress-appgw-http-listener"
+intranet_ingress_appgw_http_listener_protocol: "Http"
+intranet_ingress_appgw_request_routing_rule_name: "intranet-ingress-appgw-request-routing-rule"
+intranet_ingress_appgw_request_routing_rule_type: "Basic"
+intranet_ingress_appgw_request_routing_rule_priority: 1
+
+##############################################
+# API Management Configuration
+##############################################
+# intranet ingress api management
+intranet_ingress_apim_name: "intranet-ingress-apim" # api management name cannot have special characters (max. 3-50 characters)
+intranet_ingress_apim_publisher_name: "Contoso" # change this
+intranet_ingress_apim_publisher_email: "apim@contoso.com" # change this
+intranet_ingress_apim_sku_name: "Developer" # Developer or Premium for GCC compliance
+intranet_ingress_apim_sku_capacity: "1"
+intranet_ingress_apim_virtual_network_type: "Internal"
+
+##############################################
+# Storage Account SFTP Configuration
+##############################################
+# intranet ingress sftp storage account
+intranet_ingress_sftp_storage_account: 0
+intranet_ingress_sftp_storage_account_name: "intranetsftpsa" # storage account name cannot have special characters (max. 3-24 characters)
+intranet_ingress_sftp_storage_account_tier: "Standard"
+intranet_ingress_sftp_storage_account_replication_type: "LRS"
+intranet_ingress_sftp_storage_account_public_network_access_enabled: "false"
+intranet_ingress_sftp_storage_account_is_hns_enabled: "true"
+intranet_ingress_sftp_storage_account_sftp_enabled: "true"
+intranet_ingress_sftp_storage_account_identity_type: "SystemAssigned"
+intranet_ingress_sftp_storage_account_private_endpoint_name: "intranet-ingress-sftp-sa-pe"
+intranet_ingress_sftp_storage_account_private_endpoint_private_service_connection_name: "intranet-ingress-sftp-sa-pe-psc"
+intranet_ingress_sftp_storage_account_private_endpoint_private_service_connection_is_manual_connection: "false"
+intranet_ingress_sftp_storage_account_private_endpoint_private_service_connection_subresource_names: ["blob"]

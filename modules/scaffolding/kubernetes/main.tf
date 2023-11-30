@@ -92,7 +92,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "aks_cluster_node_pools" {
 
 # resource "azurerm_private_dns_zone_virtual_network_link" "aks_cluster_private_dns_zone_vnet_links" {
 #   for_each = var.aks_cluster_private_dns_zone_vnet_links
-#   name     = format("%s_%s", each.value.name, var.random_string)
+#   name     = format("%s-%s", each.value.name, var.random_string)
 
 #   # aks private cluster will create a new RG
 #   # e.g. MC_gcc-inter-rgscjm_gcc-inter-app-aks-private-clusterscjm_eastus (MC_<resource-group-name>_<aks cluster-name>)

@@ -2,7 +2,10 @@
 - hosts: localhost
   tasks:
     - name: Load config
-      include_vars: landing-zone-config.yml
+      include_vars:
+        dir: vars  
+        extensions:
+          - yml   
     - name: Render config for landing zone
       template:
         src: "landing-zone-template.j2"

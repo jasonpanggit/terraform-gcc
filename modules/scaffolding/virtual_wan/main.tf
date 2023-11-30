@@ -1,7 +1,7 @@
 # vWAN
 resource "azurerm_virtual_wan" "vwans" {
   for_each            = var.vwans
-  name                = format("%s_%s", each.value.name, var.random_string)
+  name                = format("%s-%s", each.value.name, var.random_string)
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
 }
@@ -9,7 +9,7 @@ resource "azurerm_virtual_wan" "vwans" {
 # vWAN Hubs
 resource "azurerm_virtual_hub" "vwan_hubs" {
   for_each            = var.vwan_hubs
-  name                = format("%s_%s", each.value.name, var.random_string)
+  name                = format("%s-%s", each.value.name, var.random_string)
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
   virtual_wan_id      = azurerm_virtual_wan.vwans[each.value.vwan_key].id
@@ -27,7 +27,7 @@ resource "azurerm_virtual_hub" "vwan_hubs" {
 # vWAN Hub Connections
 resource "azurerm_virtual_hub_connection" "vwan_hub_connections" {
   for_each                  = var.vwan_hub_connections
-  name                      = format("%s_%s", each.value.name, var.random_string)
+  name                      = format("%s-%s", each.value.name, var.random_string)
   virtual_hub_id            = azurerm_virtual_hub.vwan_hubs[each.value.vwan_hub_key].id
   remote_virtual_network_id = var.virtual_networks[each.value.vnet_key].id
   internet_security_enabled = each.value.internet_security_enabled

@@ -1,0 +1,166 @@
+---
+random_string_length: 4
+location: "East US"
+
+##############################################
+# Internet ingress zone configuration
+##############################################
+
+# internet ingress zone (Non-GEN)
+internet_ingress_zone: 1
+internet_ingress_resource_group_name: "internet-ingress-rg"
+internet_ingress_vnet_name: "internet-ingress-vnet"
+internet_ingress_vnet_cidr: ["100.0.0.0/24"]
+
+# intranet ingress firewall (GEN)
+internet_ingress_fw: 1
+internet_ingress_fw_subnet_name: "AzureFirewallSubnet" # do not change
+internet_ingress_fw_subnet_cidr: ["100.0.0.0/26"] # min. is /26 (64 IPs) 
+
+# internet ingress app gateway (Non-GEN)
+internet_ingress_appgw: 1
+internet_ingress_appgw_subnet_name: "appgw-subnet"
+internet_ingress_appgw_subnet_cidr: ["100.0.0.64/27"] # min. is /29 (8 IPs)
+
+# internet ingress api management (Non-GEN)
+internet_ingress_apim: 1
+internet_ingress_apim_subnet_name: "apim-subnet"
+internet_ingress_apim_subnet_cidr: ["100.0.0.96/28"] # min. is /29 (8 IPs)
+
+# internet ingress sftp (Non-GEN)
+internet_ingress_sftp: 1
+internet_ingress_sftp_subnet_name: "sftp-subnet"
+internet_ingress_sftp_subnet_cidr: ["100.0.0.112/28"] # (16 IPs)
+
+##############################################
+# Internet egress zone configuration
+##############################################
+
+# internet egress zone (Non-GEN)
+internet_egress_zone: 0
+internet_egress_vnet_name: "internet-egress-vnet"
+internet_egress_vnet_cidr: ["100.0.2.0/24"]
+
+# internet egress firewall (GEN)
+internet_egress_fw: 0
+internet_egress_fw_subnet_name: "AzureFirewallSubnet" # do not change
+internet_egress_fw_subnet_cidr: ["100.0.2.0/26"] # min. is /26 (64 IPs)
+
+##############################################
+# Intranet ingress zone configuration
+##############################################
+
+# intranet ingress zone (GEN)
+intranet_ingress_zone: 1
+intranet_ingress_resource_group_name: "intranet-ingress-rg"
+intranet_ingress_vnet_name: "intranet-ingress-vnet"
+intranet_ingress_vnet_cidr: ["10.0.0.0/25"]
+
+# intranet ingress firewall (GEN)
+intranet_ingress_fw: 0
+intranet_ingress_fw_subnet_name: "AzureFirewallSubnet" # do not change
+intranet_ingress_fw_subnet_cidr: ["10.0.0.0/26"] # min. is /26 (64 IPs)
+
+# intranet ingress app gateway (GEN)
+intranet_ingress_appgw: 0
+intranet_ingress_appgw_subnet_name: "appgw-subnet"
+intranet_ingress_appgw_subnet_cidr: ["10.0.0.64/27"]
+
+# intranet ingress api management (GEN)
+intranet_ingress_apim: 0
+intranet_ingress_apim_subnet_name: "apim-subnet"
+intranet_ingress_apim_subnet_cidr: ["10.0.0.96/28"]
+
+# intranet ingress sftp (GEN)
+intranet_ingress_sftp: 0
+intranet_ingress_sftp_subnet_name: "sftp-subnet"
+intranet_ingress_sftp_subnet_cidr: ["10.0.0.112/28"]
+
+##############################################
+# Intranet egress zone configuration
+##############################################
+
+# intranet egress zone (GEN)
+intranet_egress_zone: 0
+intranet_egress_vnet_name: "intranet-egress-vnet"
+intranet_egress_vnet_cidr: ["10.0.3.0/25"]
+
+# intranet egress firewall subnet
+intranet_egress_fw: 0
+intranet_egress_fw_subnet_name: "AzureFirewallSubnet"
+intranet_egress_fw_subnet_cidr: ["10.0.4.0/27"]
+
+##############################################
+# Workload zone configuration
+##############################################
+
+# workload zone (Non-GEN)
+workload_zone: 1
+workload_resource_group_name: "workload-rg"
+workload_vnet_name: "workload-vnet"
+workload_vnet_cidr: ["100.0.1.0/24"]
+
+# workload app subnet
+workload_app: 1
+workload_app_subnet_name: "workload-app-subnet"
+workload_app_subnet_cidr: ["100.0.1.0/25"]
+
+# workload db subnet
+workload_db: 1
+workload_db_subnet_name: "workload-db-subnet"
+workload_db_subnet_cidr: ["100.0.1.128/25"]
+
+##############################################
+# Management zone configuration
+##############################################
+
+# mgmt zone (GEN)
+mgmt_zone: 1
+mgmt_resource_group_name: "mgmt-rg"
+mgmt_vnet_name: "mgmt-vnet"
+mgmt_vnet_cidr: ["10.0.1.0/25"]
+
+# mgmt bastion
+mgmt_bastion: 1
+mgmt_bastion_subnet_name: "AzureBastionSubnet" # do not change
+mgmt_bastion_subnet_cidr: ["10.0.1.0/27"]
+
+# mgmt adds
+mgmt_adds: 1
+mgmt_adds_subnet_name: "adds-subnet"
+mgmt_adds_subnet_cidr: ["10.0.1.32/27"]
+
+# mgmt patch
+mgmt_patch: 1
+mgmt_patch_subnet_name: "patch-subnet"
+mgmt_patch_subnet_cidr: ["10.0.1.64/27"]
+
+# mgmt security
+mgmt_security: 1
+mgmt_security_subnet_name: "security-subnet"
+mgmt_security_subnet_cidr: ["10.0.1.96/27"]
+
+##############################################
+# Devops zone configuration
+##############################################
+
+# devops zone (GEN)
+devops_zone: 1
+devops_resource_group_name: "devops-rg"
+devops_vnet_name: "devops-vnet"
+devops_vnet_cidr: ["10.0.2.0/25"]
+
+# devops runner subnet
+devops_runner: 1
+devops_runner_subnet_name: "runner-subnet"
+devops_runner_subnet_cidr: ["10.0.2.0/27"]
+
+##############################################
+# DNS forwarding zone configuration
+##############################################
+
+# dns forwarding zone (GEN)
+dns_forwarding_zone: 1
+dns_forwarding_resource_group_name: "dns-forwarding-rg"
+dns_forwarding_vnet_name: "dns-forwarding-vnet"
+dns_forwarding_vnet_cidr: ["10.0.3.0/25"]

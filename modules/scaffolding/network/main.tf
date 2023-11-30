@@ -1,7 +1,7 @@
 # VNets
 resource "azurerm_virtual_network" "virtual_networks" {
   for_each            = var.virtual_networks
-  name                = format("%s_%s", each.value.name, var.random_string)
+  name                = format("%s-%s", each.value.name, var.random_string)
   location            = var.location
   resource_group_name = var.resource_groups[each.value.rg_key].name
   address_space       = each.value.address_space
@@ -48,7 +48,7 @@ resource "azurerm_subnet" "subnets" {
 # VNet peerings
 resource "azurerm_virtual_network_peering" "vnet_peers" {
   for_each                     = var.vnet_peers
-  name                         = format("%s_%s", each.value.name, var.random_string)
+  name                         = format("%s-%s", each.value.name, var.random_string)
   virtual_network_name         = azurerm_virtual_network.virtual_networks[each.value.vnet_key].name
   resource_group_name          = var.resource_groups[each.value.rg_key].name
   remote_virtual_network_id    = azurerm_virtual_network.virtual_networks[each.value.remote_vnet_key].id

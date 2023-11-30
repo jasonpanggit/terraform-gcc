@@ -1,6 +1,6 @@
 resource "azurerm_app_service_environment_v3" "app_service_environments_v3" {
   for_each            = var.app_service_environments_v3
-  name                = format("%s_%s", each.value.name, var.random_string)
+  name                = format("%s-%s", each.value.name, var.random_string)
   resource_group_name = var.resource_groups[each.value.rg_key].name
   subnet_id           = var.subnets[each.value.subnet_key].id
 
@@ -17,7 +17,7 @@ resource "azurerm_app_service_environment_v3" "app_service_environments_v3" {
 
 resource "azurerm_service_plan" "app_service_plans" {
   for_each                   = var.app_service_plans
-  name                       = format("%s_%s", each.value.name, var.random_string)
+  name                       = format("%s-%s", each.value.name, var.random_string)
   location                   = var.resource_groups[each.value.rg_key].location
   resource_group_name        = var.resource_groups[each.value.rg_key].name
   os_type                    = each.value.os_type

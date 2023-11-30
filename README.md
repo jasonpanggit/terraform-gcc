@@ -14,3 +14,14 @@ Terraform for GCC scaffolding is a terraform module which quickly provisions a G
 1. Reopen folder in container (this will build a Ubuntu container using the configuration in .devcontainer folder for the the first time)
 2. It uses Ansible and Jinja2 to generate a landing zone tfvars file based on user configuration which is then pass to terraform plan|apply using -var-file param.
 3. See ansible folder README for more details on execution.
+
+## Importing GCC existing resources (e.g. resource groups, vnets)
+1. To import existing VNets created by CMP, run the following
+
+```
+terraform -var-file generated-landing-zone.tfvars module.resource_group.azurerm_resource_group.resource_groups[\"internet_ingress_rg"] /subscriptions/<subscription-id>/resourceGroups/<resource-group-name>
+```
+
+```
+terraform -var-file generated-landing-zone.tfvars module.network.azurerm_virtual_network.virtual_networks[\"internet_ingress_vnet\"] /subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/virtualNetworks/<vnet-name>
+```

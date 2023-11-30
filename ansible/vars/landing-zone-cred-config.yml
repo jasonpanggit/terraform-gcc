@@ -1,0 +1,10 @@
+---
+#################################################################
+# Azure subscription details (do not check-in to source control)
+# Alternative: duplicate this file as landing-zone-mycred-config-working.yml as add '-working.yml' to .gitignore to prevent accidental check-in
+#################################################################
+subscription_id: enter-your-subscription-id-here
+tenant_id: enter-your-tenant-id-here
+client_id: enter-your-client-id-here
+client_secret: enter-your-client-secret-here
+#################################################################

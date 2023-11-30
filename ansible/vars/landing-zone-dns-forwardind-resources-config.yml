@@ -1,0 +1,10 @@
+---
+##############################################
+# Private DNS Resolver Configuration
+##############################################
+dns_forwarding_private_dns_resolver: 1
+dns_forwarding_private_dns_resolver_inbound_subnet_name: "private-dns-resolver-inbound-subnet"
+dns_forwarding_private_dns_resolver_inbound_subnet_cidr: ["10.0.3.0/27"]
+dns_forwarding_private_dns_resolver_outbound_subnet_name: "private-dns-resolver-outbound-subnet"
+dns_forwarding_private_dns_resolver_outbound_subnet_cidr: ["10.0.3.32/27"]
+dns_forwarding_private_dns_resolver_name: "dns-forwarding-private-dns-resolver"

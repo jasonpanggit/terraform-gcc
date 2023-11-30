@@ -19,7 +19,7 @@ resource "azurerm_storage_account" "storage_accounts" {
 # Private endpoints
 resource "azurerm_private_endpoint" "storage_account_private_endpoints" {
   for_each            = var.storage_account_private_endpoints
-  name                = format("%s_%s", each.value.name, var.random_string)
+  name                = format("%s-%s", each.value.name, var.random_string)
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
   subnet_id           = var.subnets[each.value.subnet_key].id

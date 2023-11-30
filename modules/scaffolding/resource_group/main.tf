@@ -10,7 +10,7 @@ resource "random_string" "random_suffix_string" {
 # Resource groups
 resource "azurerm_resource_group" "resource_groups" {
   for_each = var.resource_groups
-  name     = format("%s_%s", each.value.name, random_string.random_suffix_string.result)
+  name     = format("%s-%s", each.value.name, random_string.random_suffix_string.result)
   location = var.location
 
   depends_on = [

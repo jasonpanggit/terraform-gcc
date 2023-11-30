@@ -1,7 +1,7 @@
 # Firewall public IPs
 resource "azurerm_public_ip" "firewall_public_ips" {
   for_each            = var.firewall_public_ips
-  name                = format("%s_%s", each.value.name, var.random_string)
+  name                = format("%s-%s", each.value.name, var.random_string)
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
 
@@ -12,7 +12,7 @@ resource "azurerm_public_ip" "firewall_public_ips" {
 # Firewalls
 resource "azurerm_firewall" "firewalls" {
   for_each            = var.firewalls
-  name                = format("%s_%s", each.value.name, var.random_string)
+  name                = format("%s-%s", each.value.name, var.random_string)
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
 
@@ -25,7 +25,7 @@ resource "azurerm_firewall" "firewalls" {
   dynamic "ip_configuration" {
     for_each = each.value.ip_configurations
     content {
-      name                 = format("%s_%s", ip_configuration.value.ip_config_name, var.random_string)
+      name                 = format("%s-%s", ip_configuration.value.ip_config_name, var.random_string)
       subnet_id            = var.subnets[ip_configuration.value.subnet_key].id
       public_ip_address_id = azurerm_public_ip.firewall_public_ips[ip_configuration.value.public_ip_key].id
     }

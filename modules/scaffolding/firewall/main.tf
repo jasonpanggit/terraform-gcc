@@ -20,7 +20,7 @@ resource "azurerm_firewall" "firewalls" {
   sku_tier = each.value.sku_tier
 
   #dns_servers = each.value.dns_servers
-  #dns_servers = each.value.dns_server_type == "firewall" ? azurerm_firewall.firewalls[each.value.dns_server_key].ip_configuration[0].private_ip_address : (each.value.dns_server_type == "private_dns_resolver" ? var.private_dns_resolver_inbound_endpoints[each.value.dns_server_key].ip_configurations[0].priavte_ip_address : each.value.dns_server_ip)
+  dns_servers = each.value.dns_server_type == "private_dns_resolver" ? var.private_dns_resolver_inbound_endpoints[each.value.dns_server_key].ip_configurations[0].priavte_ip_address : [each.value.dns_server_key]
 
   dynamic "ip_configuration" {
     for_each = each.value.ip_configurations

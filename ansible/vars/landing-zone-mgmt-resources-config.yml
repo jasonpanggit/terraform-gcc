@@ -13,14 +13,14 @@ mgmt_bastion_ip_config_name: "mgmt-bastion-ip-config"
 ##############################################
 
 # blob.core.windows.net zone and its respective vnet links
-privatelink_blob_core_windows_net_dns_zone: 1
-blob_core_windows_net_dns_zone_workload_vnet_link: 1
-blob_core_windows_net_dns_zone_dns_forwarding_vnet_link: 1 # enable when dns forwarding zone is enabled
+privatelink_blob_core_windows_net_dns_zone: 0
+blob_core_windows_net_dns_zone_workload_vnet_link: 0
+blob_core_windows_net_dns_zone_dns_forwarding_vnet_link: 0 # enable when dns forwarding zone is enabled
 
 # azure-api.net zone and its respective vnet links
-azure_api_net_dns_zone: 1
-azure_api_net_dns_zone_workload_vnet_link: 1
+azure_api_net_dns_zone: 0
+azure_api_net_dns_zone_workload_vnet_link: 0
 
-
+# aks private dns zone and its respective vnet links
 privatelink_region_azmk8s_io_zone : 1
 azmk8s_io_zone_workload_vnet_link: 1

@@ -3,7 +3,7 @@
 # Network Security Group Configuration
 ##############################################
 # internet ingress appgw nsg
-internet_ingress_appgw_subnet_nsg: 1
+internet_ingress_appgw_subnet_nsg: 0
 internet_ingress_appgw_subnet_nsg_name: "internet-ingress-appgw-subnet-nsg"
 
 # intranet ingress appgw nsg
@@ -11,9 +11,9 @@ intranet_ingress_appgw_subnet_nsg: 0
 intranet_ingress_appgw_subnet_nsg_name: "intranet-ingress-appgw-subnet-nsg"
 
 # workload app nsg
-workload_app_subnet_nsg: 1
+workload_app_subnet_nsg: 0
 workload_app_subnet_nsg_name: "workload-app-subnet-nsg"
 
 # workload db nsg
-workload_db_subnet_nsg: 1
+workload_db_subnet_nsg: 0
 workload_db_subnet_nsg_name: "workload-db-subnet-nsg"

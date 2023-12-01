@@ -44,7 +44,7 @@ module "firewall" {
   vwan_hubs = module.vwan.scaffold_vwan_hubs
 
   # from private dns resolver module
-  # private_dns_resolver_inbound_endpoints = module.private_dns_resolver.scaffold_private_dns_resolver_inbound_endpoints
+  private_dns_resolver_inbound_endpoints = module.private_dns_resolver.scaffold_private_dns_resolver_inbound_endpoints
 
   # Firewalls
   firewall_public_ips               = var.firewall_public_ips
@@ -179,7 +179,8 @@ module "aks_cluster" {
   private_dns_zones = module.private_dns_zone.scaffold_private_dns_zones
 
   # AKSs
-  aks_clusters = var.aks_clusters
+  aks_clusters           = var.aks_clusters
+  aks_cluster_node_pools = var.aks_cluster_node_pools
   # aks_cluster_private_dns_zone_vnet_links = var.aks_cluster_private_dns_zone_vnet_links
   user_assigned_identities = var.user_assigned_identities
 }

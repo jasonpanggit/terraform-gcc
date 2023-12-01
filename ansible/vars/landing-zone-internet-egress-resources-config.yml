@@ -9,6 +9,9 @@ internet_egress_fw_public_ip_sku: "Standard"
 internet_egress_fw_name: "internet-egress-fw"
 internet_egress_fw_sku_name: "AZFW_VNet"
 internet_egress_fw_sku_tier: "Standard"
+internet_egress_fw_ip_config_name: "internet-egress-fw-ip-config"
+internet_egress_fw_dns_server_type: "azure" # enable dns proxy with azure dns or private_dns_resolver
+internet_egress_fw_dns_server_key: "168.63.129.16" # azure dns server ip or or private dns resolver key
 
 ##############################################
 # NAT Gateway Configuration

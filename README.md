@@ -18,9 +18,9 @@ Terraform for GCC scaffolding is a terraform module which quickly provisions a G
 ## Importing GCC existing resources (e.g. resource groups, vnets)
 To import existing resource group
 ```
-terraform -var-file generated-landing-zone.tfvars import module.resource_group.azurerm_resource_group.resource_groups[\"internet_ingress_rg"] /subscriptions/<subscription-id>/resourceGroups/<resource-group-name>
+terraform import -var-file generated-landing-zone.tfvars module.resource_group.azurerm_resource_group.resource_groups[\"internet_ingress_rg"] /subscriptions/<subscription-id>/resourceGroups/<resource-group-name>
 ```
 To import existing virtual network
 ```
-terraform -var-file generated-landing-zone.tfvars import module.network.azurerm_virtual_network.virtual_networks[\"internet_ingress_vnet\"] /subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/virtualNetworks/<vnet-name>
+terraform import -var-file generated-landing-zone.tfvars module.network.azurerm_virtual_network.virtual_networks[\"internet_ingress_vnet\"] /subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/virtualNetworks/<vnet-name>
 ```

@@ -10,6 +10,8 @@ internet_ingress_fw_name: "internet-ingress-fw"
 internet_ingress_fw_sku_name: "AZFW_VNet"
 internet_ingress_fw_sku_tier: "Standard"
 internet_ingress_fw_ip_config_name: "internet-ingress-fw-ip-config"
+internet_ingress_fw_dns_server_type: "azure" # azure or private_dns_resolver
+internet_ingress_fw_dns_server_key: "168.63.129.16" # azure dns server ip or private dns resolver key
 
 ##############################################
 # App Gateway Configuration

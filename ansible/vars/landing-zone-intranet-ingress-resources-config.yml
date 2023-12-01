@@ -8,6 +8,9 @@ intranet_ingress_fw_public_ip_sku: "Standard"
 intranet_ingress_fw_name: "intranet-ingress-fw"
 intranet_ingress_fw_sku_name: "AZFW_VNet"
 intranet_ingress_fw_sku_tier: "Standard"
+intranet_ingress_fw_ip_config_name: "intranet-ingress-fw-ip-config"
+intranet_ingress_fw_dns_server_type: "azure" # enable dns proxy with azure dns or private_dns_resolver
+intranet_ingress_fw_dns_server_key: "168.63.129.16" # azure dns server ip or private dns resolver key
 
 ##############################################
 # App Gateway Configuration

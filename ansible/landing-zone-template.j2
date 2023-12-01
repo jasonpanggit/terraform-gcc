@@ -553,6 +553,26 @@ subnets = {
   }
   {% endif %}
 
+  {% if (workload_zone | trim == '1') and (workload_app_aks | trim == '1') %}
+  # workload app aks subnet
+  workload_app_aks_subnet = {
+    rg_key           = "workload_rg"
+    vnet_key         = "workload_vnet"
+    name             = "{{ workload_app_aks_subnet_name }}"
+    address_prefixes = {{ workload_app_aks_subnet_cidr | safe | replace("'", '"') }}
+  }
+  {% endif %}
+
+  {% if (workload_zone | trim == '1') and (workload_app_aks_user_node_pool | trim == '1') %}
+  # workload app aks user node pool subnet
+  workload_app_aks_user_node_pool_subnet = {
+    rg_key           = "workload_rg"
+    vnet_key         = "workload_vnet"
+    name             = "{{ workload_app_aks_user_node_pool_subnet_name }}"
+    address_prefixes = {{ workload_app_aks_user_node_pool_subnet_cidr | safe | replace("'", '"') }}
+  }
+  {% endif %}
+
   {% if (workload_zone | trim == '1') and (workload_db | trim == '1') %}
   # workload db subnet
   workload_db_subnet = {
@@ -642,12 +662,10 @@ subnets = {
 
 # Route tables
 route_tables = {
-  {% if (workload_zone | trim == '1') and (workload_aks | trim == '1') %}
   {% if internet_egress_fw | trim == '1' %}
-  # workload app to internet egress firewall route table
-  workload_app_to_internet_egress_firewall_route_table = {
-    rg_key                        = "workload_rg"
-    name                          = "workload-app-to-internet-egress-fw-route-table"
+  internet_egress_firewall_route_table = {
+    rg_key                        = "internet_egress_rg"
+    name                          = "internet-egress-fw-route-table"
     disable_bgp_route_propagation = true
     routes = [
       {
@@ -661,10 +679,9 @@ route_tables = {
     tags = {}
   }
   {% else %}
-  # workload app to internet ingress firewall route table
-  workload_app_to_internet_ingress_firewall_route_table = {
-    rg_key                        = "workload_rg"
-    name                          = "workload-app-to-internet-ingress-fw-route-table"
+  internet_ingress_firewall_route_table = {
+    rg_key                        = "internet_ingress_rg"
+    name                          = "internet-ingress-fw-route-table"
     disable_bgp_route_propagation = true
     routes = [
       {
@@ -678,45 +695,37 @@ route_tables = {
     tags = {}
   }
   {% endif %} 
-  {% endif %}
-
-  # mgmt_patch_to_internet_egress_firewall_route_table = {
-  #   rg_key                        = "mgmt_rg"
-  #   name                          = "mgmt_patch_to_internet_egress_firewall_route_table"
-  #   disable_bgp_route_propagation = true
-  #   routes = [
-  #     {
-  #       name                   = "Route-to-Firewall"
-  #       address_prefix         = "0.0.0.0/0"
-  #       next_hop_type          = "VirtualAppliance"
-  #       next_hop_resource_type = "firewall"
-  #       next_hop_resource_key  = "internet_egress_firewall"
-  #     }
-  #   ]
-  #   tags = {}
-  # }
 }
 
 # Route tables associations
 route_tables_associations = {
-  {% if (workload_zone | trim == '1') and (workload_aks | trim == '1') %}
+  {% if (workload_zone | trim == '1') and (workload_app_aks | trim == '1') %}
   {% if internet_egress_fw | trim == '1' %}
-  workload_app_subnet_internet_egress_fw_route_table_assoc = {
-    subnet_key      = "workload_app_subnet"
-    route_table_key = "workload_app_to_internet_egress_firewall_route_table"
+  workload_app_aks_subnet_internet_egress_fw_route_table_assoc = {
+    subnet_key      = "workload_app_aks_subnet"
+    route_table_key = "internet_egress_firewall_route_table"
   }
   {% else %}
-  workload_app_subnet_internet_ingress_fw_route_table_assoc = {
-    subnet_key      = "workload_app_subnet"
-    route_table_key = "workload_app_to_internet_ingress_firewall_route_table"
+  workload_app_aks_subnet_internet_ingress_fw_route_table_assoc = {
+    subnet_key      = "workload_app_aks_subnet"
+    route_table_key = "internet_ingress_firewall_route_table"
   }
   {% endif %}
   {% endif %}
-  
-  # mgmt_patch_subnet_internet_egress_firewall_route_table_assoc = {
-  #   subnet_key      = "mgmt_patch_subnet"
-  #   route_table_key = "mgmt_patch_to_internet_egress_firewall_route_table"
-  # }
+
+  {% if (workload_zone | trim == '1') and (workload_app_aks_user_node_pool | trim == '1') %}
+  {% if internet_egress_fw | trim == '1' %}
+  workload_app_aks_user_node_pool_subnet_internet_egress_fw_route_table_assoc = {
+    subnet_key      = "workload_app_aks_user_node_pool_subnet"
+    route_table_key = "internet_egress_firewall_route_table"
+  }
+  {% else %}
+  workload_app_aks_user_node_pool_subnet_internet_ingress_fw_route_table_assoc = {
+    subnet_key      = "workload_app_aks_user_node_pool_subnet"
+    route_table_key = "internet_ingress_firewall_route_table"
+  }
+  {% endif %}
+  {% endif %}
 }
 
 ##########################################
@@ -1461,8 +1470,9 @@ firewalls = {
     sku_tier = "{{ internet_ingress_fw_sku_tier }}"
 
     # enable DNS proxy by setting custom DNS to private DNS resolver inbound subnet
-    #dns_servers = []
-
+    dns_server_type = "{{ internet_ingress_fw_dns_server_type }}"
+    dns_server_key = "{{ internet_ingress_fw_dns_server_key }}"
+    
     ip_configurations = [
       {
         subnet_key     = "internet_ingress_firewall_subnet"
@@ -1622,27 +1632,34 @@ firewall_network_rule_collections = {
     action       = "Allow"
     rules = [
       {
-        name                  = "apiudp"
+        name = "ntp"
+        source_addresses = ["*"]
+        destination_addresses = ["*"]
+        destination_ports = ["123"]
+        protocols = ["UDP"]
+      },
+      {
+        name = "monitor"
+        source_addresses = ["*"]
+        destination_addresses = ["AzureMonitor"]
+        destination_ports = ["443"]
+        protocols = ["TCP"]
+      },
+      {
+        name                  = "apiserverudp"
         source_addresses      = ["*"]
-        destination_addresses = ["AzureCloud.SoutheastAsia"]
+        destination_addresses = ["AzureCloud"]
         destination_ports     = ["1194"]
         protocols             = ["UDP"]
       },
       {
-        name                  = "aksfwnr"
+        name                  = "apiservertcp"
         source_addresses      = ["*"]
-        destination_addresses = ["AzureCloud.SoutheastAsia"]
-        destination_ports     = ["9000"]
+        destination_addresses = ["AzureCloud"]
+        destination_ports     = ["22","443","9000"]
         protocols             = ["TCP"]
-      },
-      {
-        name                  = "DNS"
-        source_addresses      = ["*"]
-        destination_ports     = ["53"]
-        destination_addresses = ["*"]
-        protocols             = ["UDP"]
-      },
-      {
+      }
+      {# {
         name              = "ServiceTags"
         source_addresses  = ["*"]
         destination_ports = ["*"]
@@ -1652,14 +1669,7 @@ firewall_network_rule_collections = {
           "AzureActiveDirectory",
         ]
         protocols = ["Any"]
-      },
-      {
-        name                  = "Time"
-        source_addresses      = ["*"]
-        destination_ports     = ["123"]
-        destination_addresses = ["*"]
-        protocols             = ["UDP"]
-      }
+      }, #}
     ]
   }
   {% endif %}
@@ -2086,30 +2096,30 @@ user_assigned_identities = {
 aks_clusters = {
   {% if (workload_zone | trim == '1') and (workload_aks | trim == '1') %}
   workload_aks_private_cluster = {
-    rg_key                             = "workload_rg"
-    private_dns_zone_key               = "privatelink_region_azmk8s_io_zone"
-    subnet_key                         = "workload_app_subnet"
-    user_assigned_identity_key         = "workload_aks_user_assigned_identity"
-    name                               = "{{ workload_aks_name }}"
-    dns_prefix                         = "{{ workload_aks_dns_prefix }}"
-    private_cluster_enabled            = {{ workload_aks_private_cluster_enabled | safe }}
+    rg_key                               = "workload_rg"
+    private_dns_zone_key                 = "privatelink_region_azmk8s_io_zone"
+    subnet_key                           = "{{ workload_app_aks_subnet_key }}"
+    user_assigned_identity_key           = "workload_aks_user_assigned_identity"
+    name                                 = "{{ workload_aks_name }}"
+    kubernetes_version                   = "{{ workload_aks_kubernetes_version }}"
+    dns_prefix                           = "{{ workload_aks_dns_prefix }}"
+    private_cluster_enabled              = {{ workload_aks_private_cluster_enabled | safe }}
+    
+    # identity
+    identity_type                        = "UserAssigned"
+
+    # network profile
+    network_profile_network_plugin      = "{{ workload_aks_network_profile_network_plugin }}"
+    network_profile_outbound_type       = "{{ workload_aks_network_profile_outbound_type }}"
+    network_profile_load_balancer_sku   = "{{ workload_aks_network_profile_load_balancer_sku }}"
+    network_profile_dns_service_ip      = "{{ workload_aks_network_profile_dns_service_ip }}"
+    network_profile_service_cidr        = "{{ workload_aks_network_profile_service_cidr }}"
     
     # default node pool
     default_node_pool_name             = "{{ workload_aks_default_node_pool_name }}"
     default_node_pool_node_count       = "{{ workload_aks_default_node_pool_node_count }}"
     default_node_pool_vm_size          = "{{ workload_aks_default_node_pool_vm_size }}"
     #zones                             = ["1", "2", "3"]
-    
-    # network profile
-    network_profile_network_plugin     = "{{ workload_aks_network_profile_network_plugin }}"
-    network_profile_outbound_type      = "{{ workload_aks_network_profile_outbound_type }}"
-    network_profile_load_balancer_sku  = "{{ workload_aks_network_profile_load_balancer_sku }}"
-    network_profile_docker_bridge_cidr = "{{ workload_aks_network_profile_docker_bridge_cidr }}"
-    network_profile_dns_service_ip     = "{{ workload_aks_network_profile_dns_service_ip }}"
-    network_profile_service_cidr       = "{{ workload_aks_network_profile_service_cidr }}"
-    
-    # identity
-    identity_type                      = "UserAssigned"
     
     # proxy_settings = [
     #   {
@@ -2122,12 +2132,13 @@ aks_clusters = {
 }
 
 aks_cluster_node_pools = {
-  {% if (workload_zone | trim == '1') and (workload_aks | trim == '1') and (workload_aks_user_node_pool | trim == '1') %}
+  {% if (workload_zone | trim == '1') and (workload_aks | trim == '1') and (workload_aks_node_pools | trim == '1') %}
   workload_aks_private_cluster_user_node_pool = {
     rg_key      = "workload_rg"
     cluster_key = "workload_aks_private_cluster"
-    subnet_key  = "workload_app_subnet"
-    mode        = "user"
+    subnet_key  = "{{ workload_app_aks_user_node_pool_subnet_key }}"
+    name        = "{{ workload_aks_private_cluster_user_node_pool_name }}"
+    mode        = "User"
     node_count  = "{{ workload_aks_private_cluster_user_node_pool_node_count }}"
     vm_size     = "{{ workload_aks_private_cluster_user_node_pool_vm_size }}"
     #zones       = ["1", "2", "3"]

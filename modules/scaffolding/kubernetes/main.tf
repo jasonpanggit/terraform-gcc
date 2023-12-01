@@ -11,16 +11,38 @@ resource "azurerm_kubernetes_cluster" "aks_clusters" {
   name                = format("%s-%s", each.value.name, var.random_string)
   location            = var.resource_groups[each.value.rg_key].location
   resource_group_name = var.resource_groups[each.value.rg_key].name
-  # kubernetes_version      = each.value.kubernetes_version
-  private_cluster_enabled = each.value.private_cluster_enabled
+
+  kubernetes_version      = each.value.kubernetes_version
   dns_prefix              = each.value.dns_prefix
   private_dns_zone_id     = var.private_dns_zones[each.value.private_dns_zone_key].id
+  private_cluster_enabled = each.value.private_cluster_enabled
+  #enable_rbac             = each.value.enable_rbac
+  #oidc_issuer_enabled     = each.value.oidc_issuer_enabled
+  #workload_identity_enabled = each.value.workload_identity_enabled
+  #private_cluster_public_fqdn_enabled = each.value.private_cluster_public_fqdn_enabled
+
+  identity {
+    # TODO: use user assigned identity
+    type         = each.value.identity_type
+    identity_ids = each.value.identity_type == "SystemAssigned" ? [] : [azurerm_user_assigned_identity.user_assigned_identities[each.value.user_assigned_identity_key].id]
+  }
+
+  network_profile {
+    network_plugin = each.value.network_profile_network_plugin
+    #network_plugin_mode = each.value.network_plugin_mode
+    outbound_type     = each.value.network_profile_outbound_type
+    load_balancer_sku = each.value.network_profile_load_balancer_sku
+    #docker_bridge_cidr = each.value.network_profile_docker_bridge_cidr
+    dns_service_ip = each.value.network_profile_dns_service_ip
+    service_cidr   = each.value.network_profile_service_cidr
+    #pod_cidr       = each.value.network_profile_pod_cidr
+  }
 
   default_node_pool {
     name       = each.value.default_node_pool_name
     node_count = each.value.default_node_pool_node_count
     vm_size    = each.value.default_node_pool_vm_size
-    type       = "VirtualMachineScaleSets"
+    #type       = "VirtualMachineScaleSets"
     # zones               = each.value.default_node_pool_zones
 
     # max_pods            = each.value.default_node_pool_max_pods
@@ -30,15 +52,6 @@ resource "azurerm_kubernetes_cluster" "aks_clusters" {
     # enable_auto_scaling = each.value.default_node_pool.cluster_auto_scaling
     # min_count           = each.value.default_node_pool.cluster_auto_scaling_min_count
     # max_count           = each.value.default_node_pool.cluster_auto_scaling_max_count
-  }
-
-  network_profile {
-    network_plugin     = each.value.network_profile_network_plugin
-    outbound_type      = each.value.network_profile_outbound_type
-    load_balancer_sku  = each.value.network_profile_load_balancer_sku
-    docker_bridge_cidr = each.value.network_profile_docker_bridge_cidr
-    dns_service_ip     = each.value.network_profile_dns_service_ip
-    service_cidr       = each.value.network_profile_service_cidr
   }
 
   # linux_profile {
@@ -56,18 +69,17 @@ resource "azurerm_kubernetes_cluster" "aks_clusters" {
   #   }
   # }
 
-  identity {
-    # TODO: use user assigned identity
-    type         = each.value.identity_type
-    identity_ids = each.value.identity_type == "SystemAssigned" ? [] : [azurerm_user_assigned_identity.user_assigned_identities[each.value.user_assigned_identity_key].id]
-  }
+  depends_on = [
+    azurerm_user_assigned_identity.user_assigned_identities,
+    azurerm_role_assignment.aks_private_dns_zone_contributor_role_assignment
+  ]
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "aks_cluster_node_pools" {
   for_each              = var.aks_cluster_node_pools
   name                  = each.value.name
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks_clusters[each.value.cluster_key].id
-  vm_size               = each.value.vm_key
+  vm_size               = each.value.vm_size
   node_count            = each.value.node_count
   # zones                 = each.value.zones
   mode = each.value.mode
@@ -88,7 +100,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "aks_cluster_node_pools" {
     azurerm_kubernetes_cluster.aks_clusters
   ]
 }
-
 
 # resource "azurerm_private_dns_zone_virtual_network_link" "aks_cluster_private_dns_zone_vnet_links" {
 #   for_each = var.aks_cluster_private_dns_zone_vnet_links
@@ -120,4 +131,8 @@ resource "azurerm_role_assignment" "aks_private_dns_zone_contributor_role_assign
   scope                = var.private_dns_zones[each.value.private_dns_zone_key].id
   role_definition_name = "Private DNS Zone Contributor"
   principal_id         = azurerm_user_assigned_identity.user_assigned_identities[each.value.user_assigned_identity_key].principal_id
+
+  depends_on = [
+    azurerm_user_assigned_identity.user_assigned_identities
+  ]
 }

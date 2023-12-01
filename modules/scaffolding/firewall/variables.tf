@@ -38,9 +38,8 @@ variable "firewall_network_rule_collections" {
   type    = any
 }
 
-
 # from private dns resolver module
-# variable "private_dns_resolver_inbound_endpoints" {
-#   default = {}
-#   type    = any
-# }
+variable "private_dns_resolver_inbound_endpoints" {
+  default = {}
+  type    = any
+}
